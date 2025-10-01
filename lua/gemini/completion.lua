@@ -94,7 +94,8 @@ M.gemini_complete = util.debounce(function()
     return
   end
 
-  print('-- gemini complete --')
+  local model_id = config.get_config({ 'model', 'model_id' })
+  print(string.format('-- %s complete --', model_id))
   M._gemini_complete()
 end, config.get_config({ 'completion', 'completion_delay' }) or 1000)
 
