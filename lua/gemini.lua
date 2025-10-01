@@ -19,18 +19,28 @@ M.setup = function(opts)
 
   config.set_config(opts)
 
-  require('gemini.chat').setup()
-  require('gemini.instruction').setup()
-  require('gemini.hint').setup()
+  -- require('gemini.chat').setup()
+  -- require('gemini.instruction').setup()
+  -- require('gemini.hint').setup()
   require('gemini.completion').setup()
-  require('gemini.task').setup()
+  -- require('gemini.task').setup()
 
-  vim.api.nvim_create_user_command("Gemini", function(cmd_args)
-    if cmd_args.args == "model" then
-      M.create_floating_window()
-    end
-  end, { nargs = '*' })
-
+  vim.api.nvim_create_user_command("Gemini",
+    function(cmd_args)
+      if cmd_args.args == "model" then
+        M.create_floating_window()
+      end
+    end,
+    { nargs = '+',
+      complete = function()
+        -- arglead: the text of the current argument being completed
+        -- cmdline: the full command line
+        -- cursorpos: the cursor position in the command line
+        return{ 'model' }
+      end,
+      desc = 'My first command with arguments and autocompletion.'
+    }
+  )
 end
 
 local function win_config()
