@@ -99,4 +99,18 @@ M.strip_code = function(text)
   return code_blocks
 end
 
+M.is_nvim_version_ge = function (major, minor, patch)
+  local v = vim.version()
+  if v.major > major then
+    return true
+  elseif v.major == major then
+    if v.minor > minor then
+      return true
+    elseif v.minor == minor and v.patch >= patch then
+      return true
+    end
+  end
+  return false
+end
+
 return M
