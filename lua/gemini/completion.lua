@@ -20,6 +20,7 @@ M.setup = function()
   context.namespace_id = vim.api.nvim_create_namespace('gemini_completion')
 
   vim.api.nvim_create_autocmd('CursorMovedI', {
+    group = "Gemini",
     callback = function()
       local buf = vim.api.nvim_get_current_buf()
       local filetype = vim.api.nvim_get_option_value('filetype', { buf = buf })
@@ -66,6 +67,7 @@ M._gemini_complete = function()
   local model_id = config.get_config({ 'model', 'model_id' })
   api.gemini_generate_content(user_text, system_text, model_id, generation_config, function(result)
     local json_text = result.stdout
+    if vim.g.gemini_debug then print(json_text) end
     if json_text and #json_text > 0 then
       local model_response = vim.json.decode(json_text)
       model_response = util.table_get(model_response, { 'candidates', 1, 'content', 'parts', 1, 'text' })
