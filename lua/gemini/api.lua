@@ -15,6 +15,7 @@ M.MODELS = {
 M.gemini_generate_content = function(user_text, system_text, model_name, generation_config, callback)
   local api_key = os.getenv("GEMINI_API_KEY")
   if not api_key then
+    error("Gemini: GEMINI_API_KEY not set")
     return ''
   end
 
