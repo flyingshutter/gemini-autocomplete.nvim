@@ -68,11 +68,6 @@ M._gemini_complete = function()
     local json_text = result.stdout
     if json_text and #json_text > 0 then
       local model_response = vim.json.decode(json_text)
-      local model_error = util.table_get(model_response, { 'error' })
-      if model_error then
-        error('Gemini reported an error\n' .. vim.inspect(model_error))
-      end
-
       model_response = util.table_get(model_response, { 'candidates', 1, 'content', 'parts', 1, 'text' })
       if model_response ~= nil and #model_response > 0 then
         vim.schedule(function()

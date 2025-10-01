@@ -1,3 +1,5 @@
+local util = require('gemini.util')
+
 local uv = vim.loop or vim.uv
 
 local M = {}
@@ -11,6 +13,18 @@ M.MODELS = {
   GEMINI_2_0_FLASH = 'gemini-2.0-flash',
   GEMINI_2_0_FLASH_LITE = 'gemini-2.0-flash-lite',
 }
+
+local function handle_error(obj, callback)
+    local json_text = obj.stdout
+    if json_text and #json_text > 0 then
+      local model_response = vim.json.decode(json_text)
+      local model_error = util.table_get(model_response, { 'error' })
+      if model_error then
+        error('Gemini reported an error\n' .. vim.inspect(model_error))
+      end
+    end
+    callback(obj)
+end
 
 M.gemini_generate_content = function(user_text, system_text, model_name, generation_config, callback)
   local api_key = os.getenv("GEMINI_API_KEY")
@@ -49,7 +63,7 @@ M.gemini_generate_content = function(user_text, system_text, model_name, generat
   local cmd = { 'curl', '-X', 'POST', api, '-H', 'Content-Type: application/json', '--data-binary', '@-' }
   local opts = { stdin = json_text }
   if callback then
-    return vim.system(cmd, opts, callback)
+    return vim.system(cmd, opts, function(obj) handle_error(obj,callback) end)
   else
     return vim.system(cmd, opts)
   end
