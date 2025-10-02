@@ -18,10 +18,10 @@ M.setup = function(opts)
   vim.api.nvim_create_augroup('Gemini', { clear = true })
 
   config.set_config(opts)
-  -- M.enabled = config.config.completion.enabled
+  -- M.enabled = config.get_config().completion.enabled
   require('gemini.completion').setup()
 
-  if config.config.general.mini_statusline then
+  if config.get_config().general.mini_statusline then
     M.mini_statusline()
   end
 
@@ -85,7 +85,7 @@ M.mini_statusline = function()
     local location = MiniStatusline.section_location({ trunc_width = 75 })
     local search = MiniStatusline.section_searchcount({ trunc_width = 75 })
 
-    local gemini_model = require('gemini.config').config.model.model_id
+    local gemini_model = require('gemini.config').get_config().model.model_id
     local pos = string.find(gemini_model, '-')
     local gemini_model_short = string.sub(gemini_model, pos + 1)
     local hl_gemini = 'PmenuMatchSel'
@@ -107,8 +107,8 @@ M.mini_statusline = function()
 end
 
 M.toggle_enabled = function()
-  config.config.completion.enabled = not config.config.completion.enabled
-  if config.config.completion.enabled then
+  config.get_config().completion.enabled = not config.get_config().completion.enabled
+  if config.get_config().completion.enabled then
     print('Gemini: Autocomplete enabled')
   else
     print('Gemini: Autocomplete disabled')
@@ -116,7 +116,7 @@ M.toggle_enabled = function()
 end
 
 M.is_enabled = function()
-  return config.config.completion.enabled
+  return config.get_config().completion.enabled
 end
 
 return M
