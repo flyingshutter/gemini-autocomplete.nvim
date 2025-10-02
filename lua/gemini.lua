@@ -71,7 +71,7 @@ function M.create_floating_window()
 
   vim.keymap.set('n', '<CR>', function()
     local line = vim.api.nvim_get_current_line()
-    config.set_config({ model_config = {model_id = line}})
+    config.set_config({ model = {model_id = line}})
     vim.api.nvim_win_close(0, false)
   end, { buffer = buf, desc = 'Close Floating [W]in' })
 

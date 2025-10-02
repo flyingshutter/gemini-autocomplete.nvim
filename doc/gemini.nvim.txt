@@ -28,7 +28,7 @@ lazy.nvim:
 CONFIGURATION                                    *gemini.nvim-config*
 
 {
-  model_config = {
+  model = {
     completion_delay = 1000,
     model_id = api.MODELS.GEMINI_2_0_FLASH,
     temperature = 0.2,
