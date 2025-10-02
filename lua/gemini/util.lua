@@ -16,7 +16,6 @@ M.debounce = function(callback, timeout)
   return f
 end
 
-
 M.is_blacklisted = function(blacklist, filetype)
   for _, ft in ipairs(blacklist) do
     if string.find(filetype, ft, 1, true) ~= nil then
