@@ -21,7 +21,7 @@ M.setup = function(opts)
   -- M.enabled = config.config.completion.enabled
   require('gemini.completion').setup()
 
-  if config.config.general.mini_statusline then 
+  if config.config.general.mini_statusline then
     M.mini_statusline()
   end
 
@@ -74,16 +74,16 @@ M.choose_model = function()
 end
 
 M.mini_statusline = function()
-  require 'mini.statusline'.config.content.active = function()
-    local mode, mode_hl = MiniStatusline.section_mode { trunc_width = 120 }
-    local git = MiniStatusline.section_git { trunc_width = 40 }
-    local diff = MiniStatusline.section_diff { trunc_width = 75 }
-    local diagnostics = MiniStatusline.section_diagnostics { trunc_width = 75 }
-    local lsp = MiniStatusline.section_lsp { trunc_width = 75 }
-    local filename = MiniStatusline.section_filename { trunc_width = 140 }
-    local fileinfo = MiniStatusline.section_fileinfo { trunc_width = 120 }
-    local location = MiniStatusline.section_location { trunc_width = 75 }
-    local search = MiniStatusline.section_searchcount { trunc_width = 75 }
+  require('mini.statusline').config.content.active = function()
+    local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 120 })
+    local git = MiniStatusline.section_git({ trunc_width = 40 })
+    local diff = MiniStatusline.section_diff({ trunc_width = 75 })
+    local diagnostics = MiniStatusline.section_diagnostics({ trunc_width = 75 })
+    local lsp = MiniStatusline.section_lsp({ trunc_width = 75 })
+    local filename = MiniStatusline.section_filename({ trunc_width = 140 })
+    local fileinfo = MiniStatusline.section_fileinfo({ trunc_width = 120 })
+    local location = MiniStatusline.section_location({ trunc_width = 75 })
+    local search = MiniStatusline.section_searchcount({ trunc_width = 75 })
 
     local gemini_model = require('gemini.config').config.model.model_id
     local pos = string.find(gemini_model, '-')
@@ -93,7 +93,7 @@ M.mini_statusline = function()
       hl_gemini = 'DiffDelete'
     end
 
-    return MiniStatusline.combine_groups {
+    return MiniStatusline.combine_groups({
       { hl = mode_hl, strings = { mode } },
       { hl = 'MiniStatuslineDevinfo', strings = { git, diff, diagnostics, lsp } },
       '%<', -- Mark general truncate point
@@ -102,16 +102,16 @@ M.mini_statusline = function()
       { hl = hl_gemini, strings = { gemini_model_short } },
       { hl = 'MiniStatuslineFileinfo', strings = { fileinfo } },
       { hl = mode_hl, strings = { search, location } },
-    }
+    })
   end
 end
 
 M.toggle_enabled = function()
   config.config.completion.enabled = not config.config.completion.enabled
   if config.config.completion.enabled then
-    print 'Gemini: Autocomplete enabled'
+    print('Gemini: Autocomplete enabled')
   else
-    print 'Gemini: Autocomplete disabled'
+    print('Gemini: Autocomplete disabled')
   end
 end
 
