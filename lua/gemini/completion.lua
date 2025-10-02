@@ -10,10 +10,6 @@ local context = {
 }
 
 M.setup = function()
-  if not config.get_config({ 'completion', 'enabled' }) then
-    return
-  end
-
   local blacklist_filetypes = config.get_config({ 'completion', 'blacklist_filetypes' }) or {}
   local blacklist_filenames = config.get_config({ 'completion', 'blacklist_filenames' }) or {}
 
@@ -86,13 +82,23 @@ M._gemini_complete = function()
   end)
 end
 
+local can_complete = config.get_config({ 'completion', 'can_complete' })
+or function()
+  print('default can_complete')
+  return vim.fn.pumvisible() ~= 1
+end
+
 M.gemini_complete = util.debounce(function()
+  -- if not require('gemini').enabled then
+  if not require'gemini.config'.config.completion.enabled then
+    return
+  end
+
   if vim.fn.mode() ~= 'i' then
     return
   end
 
-  local can_complete = config.get_config({ 'completion', 'can_complete' })
-  if not can_complete or not can_complete() then
+  if not can_complete() then
     return
   end
 
@@ -116,10 +122,13 @@ M.show_completion_result = function(result, win_id, pos)
     return
   end
 
-  local can_complete = config.get_config({ 'completion', 'can_complete' })
-  if not can_complete or not can_complete() then
+  if not can_complete() then
     return
   end
+  -- local can_complete = config.get_config({ 'completion', 'can_complete' })
+  -- if not can_complete or not can_complete() then
+  --   return
+  -- end
 
   local bufnr = vim.api.nvim_get_current_buf()
   local options = {

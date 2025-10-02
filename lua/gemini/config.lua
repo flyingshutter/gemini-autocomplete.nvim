@@ -4,6 +4,9 @@ local util = require('gemini.util')
 local M = {}
 
 local default_config = {
+  general = {
+    mini_statusline = nil
+  },
   model = {
     model_id = api.MODELS.GEMINI_2_5_FLASH_LITE,
     temperature = 0.10,
@@ -15,11 +18,9 @@ local default_config = {
     blacklist_filetypes = { 'help', 'qf', 'json', 'yaml', 'toml', 'xml' },
     blacklist_filenames = { '.env' },
     completion_delay = 800,
-    insert_result_key = '<S-Tab>',
+    insert_result_key = '<Tab>',
     move_cursor_end = true,
-    can_complete = function()
-      return vim.fn.pumvisible() ~= 1
-    end,
+    can_complete = nil,
     get_system_text = function()
       return "You are a coding AI assistant that autocomplete user's code."
         .. '\n* Your task is to provide code suggestion at the cursor location marked by <cursor></cursor>.'

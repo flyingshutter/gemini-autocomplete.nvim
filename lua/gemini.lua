@@ -18,23 +18,20 @@ M.setup = function(opts)
   vim.api.nvim_create_augroup('Gemini', { clear = true })
 
   config.set_config(opts)
-
-  -- require('gemini.chat').setup()
-  -- require('gemini.instruction').setup()
-  -- require('gemini.hint').setup()
+  -- M.enabled = config.config.completion.enabled
   require('gemini.completion').setup()
-  -- require('gemini.task').setup()
+
+  if config.config.general.mini_statusline then 
+    M.mini_statusline()
+  end
 
   vim.api.nvim_create_user_command('Gemini', function(cmd_args)
     if cmd_args.args == 'model' then
-      M.create_floating_window()
+      M.choose_model()
     end
   end, {
     nargs = '+',
-    complete = function()
-      -- arglead: the text of the current argument being completed
-      -- cmdline: the full command line
-      -- cursorpos: the cursor position in the command line
+    complete = function(arglead, cmdline, cursorpos)
       return { 'model' }
     end,
     desc = 'My first command with arguments and autocompletion.',
@@ -55,7 +52,7 @@ local function win_config()
   }
 end
 
-function M.create_floating_window()
+M.choose_model = function()
   local available_models = {}
   for _, model_name in pairs(api.MODELS) do
     table.insert(available_models, model_name)
@@ -75,4 +72,51 @@ function M.create_floating_window()
     vim.api.nvim_win_close(0, false)
   end, { buffer = buf, desc = 'Close Floating [W]in' })
 end
+
+M.mini_statusline = function()
+  require 'mini.statusline'.config.content.active = function()
+    local mode, mode_hl = MiniStatusline.section_mode { trunc_width = 120 }
+    local git = MiniStatusline.section_git { trunc_width = 40 }
+    local diff = MiniStatusline.section_diff { trunc_width = 75 }
+    local diagnostics = MiniStatusline.section_diagnostics { trunc_width = 75 }
+    local lsp = MiniStatusline.section_lsp { trunc_width = 75 }
+    local filename = MiniStatusline.section_filename { trunc_width = 140 }
+    local fileinfo = MiniStatusline.section_fileinfo { trunc_width = 120 }
+    local location = MiniStatusline.section_location { trunc_width = 75 }
+    local search = MiniStatusline.section_searchcount { trunc_width = 75 }
+
+    local gemini_model = require('gemini.config').config.model.model_id
+    local pos = string.find(gemini_model, '-')
+    local gemini_model_short = string.sub(gemini_model, pos + 1)
+    local hl_gemini = 'PmenuMatchSel'
+    if not require('gemini').is_enabled() then
+      hl_gemini = 'DiffDelete'
+    end
+
+    return MiniStatusline.combine_groups {
+      { hl = mode_hl, strings = { mode } },
+      { hl = 'MiniStatuslineDevinfo', strings = { git, diff, diagnostics, lsp } },
+      '%<', -- Mark general truncate point
+      { hl = 'MiniStatuslineFilename', strings = { filename } },
+      '%=', -- End left alignment
+      { hl = hl_gemini, strings = { gemini_model_short } },
+      { hl = 'MiniStatuslineFileinfo', strings = { fileinfo } },
+      { hl = mode_hl, strings = { search, location } },
+    }
+  end
+end
+
+M.toggle_enabled = function()
+  config.config.completion.enabled = not config.config.completion.enabled
+  if config.config.completion.enabled then
+    print 'Gemini: Autocomplete enabled'
+  else
+    print 'Gemini: Autocomplete disabled'
+  end
+end
+
+M.is_enabled = function()
+  return config.config.completion.enabled
+end
+
 return M
