@@ -4,7 +4,7 @@ local uv = vim.loop or vim.uv
 
 local M = {}
 
-local API = "https://generativelanguage.googleapis.com/v1beta/models/";
+local API = "https://generativelanguage.googleapis.com/v1beta/models/"
 
 M.MODELS = {
   GEMINI_2_5_PRO = 'gemini-2.5-pro',
@@ -15,15 +15,15 @@ M.MODELS = {
 }
 
 local function handle_error(obj, callback)
-    local json_text = obj.stdout
-    if json_text and #json_text > 0 then
-      local model_response = vim.json.decode(json_text)
-      local model_error = util.table_get(model_response, { 'error' })
-      if model_error then
-        error('Gemini reported an error\n' .. vim.inspect(model_error))
-      end
+  local json_text = obj.stdout
+  if json_text and #json_text > 0 then
+    local model_response = vim.json.decode(json_text)
+    local model_error = util.table_get(model_response, { 'error' })
+    if model_error then
+      error('Gemini reported an error\n' .. vim.inspect(model_error))
     end
-    callback(obj)
+  end
+  callback(obj)
 end
 
 M.gemini_generate_content = function(user_text, system_text, model_name, generation_config, callback)
