@@ -16,8 +16,7 @@ describe('api', function()
     assert(#stdout > 0)
 
     local result = vim.json.decode(stdout)
-    local model_response = util.table_get(result, { 'candidates', 1, 'content',
-      'parts', 1, 'text' })
+    local model_response = util.table_get(result, { 'candidates', 1, 'content', 'parts', 1, 'text' })
     assert(#model_response > 0)
   end)
 
@@ -36,8 +35,7 @@ describe('api', function()
     assert(#stdout > 0)
 
     local result = vim.json.decode(stdout)
-    local model_response = util.table_get(result, { 'candidates', 1, 'content',
-      'parts', 1, 'text' })
+    local model_response = util.table_get(result, { 'candidates', 1, 'content', 'parts', 1, 'text' })
     assert(#model_response > 0)
   end)
 end)

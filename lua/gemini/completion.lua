@@ -20,11 +20,11 @@ M.setup = function()
   context.namespace_id = vim.api.nvim_create_namespace('gemini_completion')
 
   vim.api.nvim_create_autocmd('CursorMovedI', {
-    group = "Gemini",
+    group = 'Gemini',
     callback = function()
       local buf = vim.api.nvim_get_current_buf()
       local filetype = vim.api.nvim_get_option_value('filetype', { buf = buf })
-      local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":t")
+      local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ':t')
       if util.is_blacklisted(blacklist_filetypes, filetype) or util.is_blacklisted(blacklist_filenames, filename) then
         return
       end
@@ -67,7 +67,9 @@ M._gemini_complete = function()
   local model_id = config.get_config({ 'model', 'model_id' })
   api.gemini_generate_content(user_text, system_text, model_id, generation_config, function(result)
     local json_text = result.stdout
-    if vim.g.gemini_debug then print(json_text) end
+    if vim.g.gemini_debug then
+      print(json_text)
+    end
     if json_text and #json_text > 0 then
       local model_response = vim.json.decode(json_text)
       model_response = util.table_get(model_response, { 'candidates', 1, 'content', 'parts', 1, 'text' })
@@ -89,7 +91,7 @@ M.gemini_complete = util.debounce(function()
     return
   end
 
-  local can_complete = config.get_config({'completion', 'can_complete'})
+  local can_complete = config.get_config({ 'completion', 'can_complete' })
   if not can_complete or not can_complete() then
     return
   end
@@ -114,7 +116,7 @@ M.show_completion_result = function(result, win_id, pos)
     return
   end
 
-  local can_complete = config.get_config({'completion', 'can_complete'})
+  local can_complete = config.get_config({ 'completion', 'can_complete' })
   if not can_complete or not can_complete() then
     return
   end
@@ -128,7 +130,7 @@ M.show_completion_result = function(result, win_id, pos)
     virt_text_pos = 'inline',
   }
 
-  local content = result:match("^%s*(.-)%s*$")
+  local content = result:match('^%s*(.-)%s*$')
   for i, l in pairs(vim.split(content, '\n')) do
     if i == 1 then
       options.virt_text[1] = { l, 'Comment' }

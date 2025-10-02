@@ -65,11 +65,17 @@ M.debounce = function(callback, timeout)
 end
 
 M.table_get = function(t, id)
-  if type(id) ~= 'table' then return M.table_get(t, { id }) end
+  if type(id) ~= 'table' then
+    return M.table_get(t, { id })
+  end
   local success, res = true, t
   for _, i in ipairs(id) do
-    success, res = pcall(function() return res[i] end)
-    if not success or res == nil then return end
+    success, res = pcall(function()
+      return res[i]
+    end)
+    if not success or res == nil then
+      return
+    end
   end
   return res
 end
@@ -89,7 +95,7 @@ M.strip_code = function(text)
     return code_blocks
   end
 
-  local pattern = "```(%w+)%s*(.-)%s*```"
+  local pattern = '```(%w+)%s*(.-)%s*```'
   for _, code_block in text:gmatch(pattern) do
     table.insert(code_blocks, code_block)
   end
@@ -99,7 +105,7 @@ M.strip_code = function(text)
   return code_blocks
 end
 
-M.is_nvim_version_ge = function (major, minor, patch)
+M.is_nvim_version_ge = function(major, minor, patch)
   local v = vim.version()
   if v.major > major then
     return true

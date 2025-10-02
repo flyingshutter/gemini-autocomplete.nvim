@@ -22,16 +22,16 @@ local default_completion_config = {
   end,
   get_system_text = function()
     return "You are a coding AI assistant that autocomplete user's code."
-      .. "\n* Your task is to provide code suggestion at the cursor location marked by <cursor></cursor>."
+      .. '\n* Your task is to provide code suggestion at the cursor location marked by <cursor></cursor>.'
       .. '\n* Your response does not need to contain explaination.'
   end,
   get_prompt = function(bufnr, pos)
     local filetype = vim.api.nvim_get_option_value('filetype', { buf = bufnr })
     local prompt = 'Below is the content of a %s file `%s`:\n'
-        .. '```%s\n%s\n```\n\n'
-        .. 'Suggest the most likely code at <cursor></cursor>.\n'
-        .. 'Wrap your response in ``` ```\n'
-        .. 'eg.\n```\n```\n\n'
+      .. '```%s\n%s\n```\n\n'
+      .. 'Suggest the most likely code at <cursor></cursor>.\n'
+      .. 'Wrap your response in ``` ```\n'
+      .. 'eg.\n```\n```\n\n'
     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
     local line = pos[1]
     local col = pos[2]
@@ -46,7 +46,7 @@ local default_completion_config = {
     local filename = vim.fn.fnamemodify(abs_path, ':.')
     prompt = string.format(prompt, filetype, filename, filetype, code)
     return prompt
-  end
+  end,
 }
 
 M.set_config = function(opts)

@@ -4,7 +4,7 @@ local uv = vim.loop or vim.uv
 
 local M = {}
 
-local API = "https://generativelanguage.googleapis.com/v1beta/models/"
+local API = 'https://generativelanguage.googleapis.com/v1beta/models/'
 
 M.MODELS = {
   GEMINI_2_5_PRO = 'gemini-2.5-pro',
@@ -27,9 +27,9 @@ local function handle_error(obj, callback)
 end
 
 M.gemini_generate_content = function(user_text, system_text, model_name, generation_config, callback)
-  local api_key = os.getenv("GEMINI_API_KEY")
+  local api_key = os.getenv('GEMINI_API_KEY')
   if not api_key then
-    error("Gemini: GEMINI_API_KEY not set")
+    error('Gemini: GEMINI_API_KEY not set')
     return ''
   end
 
@@ -39,10 +39,10 @@ M.gemini_generate_content = function(user_text, system_text, model_name, generat
       role = 'user',
       parts = {
         {
-          text = user_text
-        }
-      }
-    }
+          text = user_text,
+        },
+      },
+    },
   }
   local data = {
     contents = contents,
@@ -54,8 +54,8 @@ M.gemini_generate_content = function(user_text, system_text, model_name, generat
       parts = {
         {
           text = system_text,
-        }
-      }
+        },
+      },
     }
   end
 
@@ -63,14 +63,16 @@ M.gemini_generate_content = function(user_text, system_text, model_name, generat
   local cmd = { 'curl', '-X', 'POST', api, '-H', 'Content-Type: application/json', '--data-binary', '@-' }
   local opts = { stdin = json_text }
   if callback then
-    return vim.system(cmd, opts, function(obj) handle_error(obj,callback) end)
+    return vim.system(cmd, opts, function(obj)
+      handle_error(obj, callback)
+    end)
   else
     return vim.system(cmd, opts)
   end
 end
 
 M.gemini_generate_content_stream = function(user_text, model_name, generation_config, callback)
-  local api_key = os.getenv("GEMINI_API_KEY")
+  local api_key = os.getenv('GEMINI_API_KEY')
   if not api_key then
     return
   end
@@ -86,10 +88,10 @@ M.gemini_generate_content_stream = function(user_text, model_name, generation_co
         role = 'user',
         parts = {
           {
-            text = user_text
-          }
-        }
-      }
+            text = user_text,
+          },
+        },
+      },
     },
     generationConfig = generation_config,
   }
@@ -100,11 +102,11 @@ M.gemini_generate_content_stream = function(user_text, model_name, generation_co
   local stderr = uv.new_pipe()
   local options = {
     stdio = { stdin, stdout, stderr },
-    args = { api, '-X', 'POST', '-s', '-H', 'Content-Type: application/json', '-d', json_text }
+    args = { api, '-X', 'POST', '-s', '-H', 'Content-Type: application/json', '-d', json_text },
   }
 
   uv.spawn('curl', options, function(code, _)
-    print("gemini chat finished exit code", code)
+    print('gemini chat finished exit code', code)
   end)
 
   local streamed_data = ''
