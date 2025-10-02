@@ -3,7 +3,7 @@ local util = require('gemini.util')
 
 local M = {}
 
-local default_config = {
+M.config = {
   general = {
     mini_statusline = nil
   },
@@ -52,18 +52,18 @@ local default_config = {
 }
 
 M.set_config = function(opts)
-  M.config = vim.tbl_deep_extend('force', {}, default_config, opts or {})
+  M.config = vim.tbl_deep_extend('force', M.config, opts or {})
 end
 
-M.get_config = function(keys)
-  return vim.tbl_get(M.config, unpack(keys))
+M.get_config = function()
+  return M.config
 end
 
 M.get_gemini_generation_config = function()
   return {
-    temperature = M.get_config({ 'model', 'temperature' }),
-    topK = M.get_config({ 'model', 'top_k' }),
-    response_mime_type = M.get_config({ 'model', 'response_mime_type' }),
+    temperature = M.get_config().model.temperature,
+    topK = M.get_config().model.top_k,
+    response_mime_type = M.get_config().model.response_mime_type,
   }
 end
 

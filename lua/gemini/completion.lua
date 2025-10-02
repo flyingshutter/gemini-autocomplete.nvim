@@ -10,8 +10,8 @@ local context = {
 }
 
 M.setup = function()
-  local blacklist_filetypes = config.get_config({ 'completion', 'blacklist_filetypes' }) or {}
-  local blacklist_filenames = config.get_config({ 'completion', 'blacklist_filenames' }) or {}
+  local blacklist_filetypes = config.get_config().completion.blacklist_filetypes
+  local blacklist_filenames = config.get_config().completion.blacklist_filenames
 
   context.namespace_id = vim.api.nvim_create_namespace('gemini_completion')
 
@@ -28,7 +28,7 @@ M.setup = function()
     end,
   })
 
-  vim.api.nvim_set_keymap('i', config.get_config({ 'completion', 'insert_result_key' }) or '<S-Tab>', '', {
+  vim.api.nvim_set_keymap('i', config.get_config().completion.insert_result_key, '', {
     callback = function()
       M.insert_completion_result()
     end,
@@ -36,7 +36,7 @@ M.setup = function()
 end
 
 local get_prompt_text = function(bufnr, pos)
-  local get_prompt = config.get_config({ 'completion', 'get_prompt' })
+  local get_prompt = config.get_config().completion.get_prompt
   if not get_prompt then
     vim.notify('prompt function is not found', vim.log.levels.WARN)
     return nil
@@ -54,13 +54,13 @@ M._gemini_complete = function()
   end
 
   local system_text = nil
-  local get_system_text = config.get_config({ 'completion', 'get_system_text' })
+  local get_system_text = config.get_config().completion.get_system_text
   if get_system_text then
     system_text = get_system_text()
   end
 
   local generation_config = config.get_gemini_generation_config()
-  local model_id = config.get_config({ 'model', 'model_id' })
+  local model_id = config.get_config().model.model_id
   api.gemini_generate_content(user_text, system_text, model_id, generation_config, function(result)
     local json_text = result.stdout
     if vim.g.gemini_debug then
@@ -82,9 +82,8 @@ M._gemini_complete = function()
   end)
 end
 
-local can_complete = config.get_config({ 'completion', 'can_complete' })
+local can_complete = config.get_config().completion.can_complete
 or function()
-  print('default can_complete')
   return vim.fn.pumvisible() ~= 1
 end
 
@@ -102,10 +101,10 @@ M.gemini_complete = util.debounce(function()
     return
   end
 
-  local model_id = config.get_config({ 'model', 'model_id' })
+  local model_id = config.get_config().model.model_id
   print(string.format('-- %s complete --', model_id))
   M._gemini_complete()
-end, config.get_config({ 'completion', 'completion_delay' }) or 1000)
+end, config.get_config().completion.completion_delay)
 
 M.show_completion_result = function(result, win_id, pos)
   local win = vim.api.nvim_get_current_win()
@@ -125,10 +124,6 @@ M.show_completion_result = function(result, win_id, pos)
   if not can_complete() then
     return
   end
-  -- local can_complete = config.get_config({ 'completion', 'can_complete' })
-  -- if not can_complete or not can_complete() then
-  --   return
-  -- end
 
   local bufnr = vim.api.nvim_get_current_buf()
   local options = {
@@ -186,7 +181,7 @@ M.insert_completion_result = function()
   lines[1] = string.sub(first_line, 1, col) .. lines[1] .. string.sub(first_line, col + 1)
   vim.api.nvim_buf_set_lines(bufnr, row, row + 1, false, lines)
 
-  if config.get_config({ 'completion', 'move_cursor_end' }) == true then
+  if config.get_config().completion.move_cursor_end == true then
     local new_row = row + #lines
     local new_col = #vim.api.nvim_buf_get_lines(0, new_row - 1, new_row, false)[1]
     vim.api.nvim_win_set_cursor(0, { new_row, new_col })
