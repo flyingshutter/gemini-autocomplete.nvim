@@ -18,7 +18,7 @@ local function handle_error(obj, callback)
   local json_text = obj.stdout
   if json_text and #json_text > 0 then
     local model_response = vim.json.decode(json_text)
-    local model_error = util.table_get(model_response, { 'error' })
+    local model_error = vim.tbl_get(model_response, 'error')
     if model_error then
       error('Gemini reported an error\n' .. vim.inspect(model_error))
     end

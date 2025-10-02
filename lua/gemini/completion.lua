@@ -72,7 +72,7 @@ M._gemini_complete = function()
     end
     if json_text and #json_text > 0 then
       local model_response = vim.json.decode(json_text)
-      model_response = util.table_get(model_response, { 'candidates', 1, 'content', 'parts', 1, 'text' })
+      model_response = vim.tbl_get(model_response, 'candidates', 1, 'content', 'parts', 1, 'text')
       if model_response ~= nil and #model_response > 0 then
         vim.schedule(function()
           if model_response then
