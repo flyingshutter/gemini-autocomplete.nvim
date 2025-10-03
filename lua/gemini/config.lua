@@ -9,8 +9,8 @@ M.config = {
   },
   model = {
     model_id = api.MODELS.GEMINI_2_5_FLASH_LITE,
-    temperature = 0.10,
-    top_k = 128,
+    temperature = 1,
+    -- top_k = 128,
     response_mime_type = 'text/plain',
   },
   completion = {
@@ -63,7 +63,7 @@ end
 M.get_gemini_generation_config = function()
   return {
     temperature = M.get_config().model.temperature,
-    topK = M.get_config().model.top_k,
+    -- topK = M.get_config().model.top_k,
     response_mime_type = M.get_config().model.response_mime_type,
   }
 end
