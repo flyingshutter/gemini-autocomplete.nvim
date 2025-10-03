@@ -47,7 +47,6 @@ M.config = {
       local abs_path = vim.api.nvim_buf_get_name(bufnr)
       local filename = vim.fn.fnamemodify(abs_path, ':.')
       prompt = string.format(prompt, require'gemini.context'.make_context_string(), filetype, filename, filetype, code)
-      print(prompt)
       return prompt
     end,
   },

@@ -48,6 +48,19 @@ M.setup = function(opts)
     M.mini_statusline()
   end
 
+
+  vim.api.nvim_create_autocmd('BufWritePost', {
+    group = 'Gemini',
+    callback = function(opts)
+      local buf = opts.buf
+      for watch_file_name, _ in pairs(context.context) do
+        if watch_file_name == vim.api.nvim_buf_get_name(buf) then
+          context.context[watch_file_name] = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+        end
+      end
+    end,
+  })
+
   vim.api.nvim_create_user_command('Gemini', function(cmd_args)
     util.notify(vim.inspect(cmd_args), vim.log.levels.DEBUG)
     if cmd_args.args == 'model' then

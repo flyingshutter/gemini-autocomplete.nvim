@@ -1,8 +1,5 @@
 local util = require('gemini.util')
 
-local watchlist = {
-}
-
 local M = {}
 M.context = {}
 
@@ -47,27 +44,7 @@ M.make_context_string = function(active_buf)
   end
   return context_string
 end
-vim.api.nvim_create_augroup('astest', { clear = true })
 
-vim.api.nvim_create_autocmd('BufWritePost', {
-  group = 'astest',
-  callback = function(opts)
-    local buf = opts.buf
-    -- TODO: replace watchlist with M.context and test write on save:
-    for _, watch_file_name in ipairs(watchlist) do
-      -- print( watch_file_name .. "  " .. vim.api.nvim_buf_get_name(buf))
-      if watch_file_name == vim.api.nvim_buf_get_name(buf) then
-        -- print("Adding file " .. vim.api.nvim_buf_get_name(buf) .. " to context")
-        M.context[watch_file_name] = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
-      end
-    end
-    -- print(vim.inspect(M))
-    -- print( M.make_context_string())
-  end,
-})
-
--- M.add_file('/home/sca04245/as/Projekte/2025-09-28_nvim_plugins/gemini.nvim/d1.txt')
--- M.add_file('/home/sca04245/as/Projekte/2025-09-28_nvim_plugins/gemini.nvim/d2.txt')
 return M
 
 

@@ -49,6 +49,7 @@ M._gemini_complete = function()
   local win = vim.api.nvim_get_current_win()
   local pos = vim.api.nvim_win_get_cursor(win)
   local user_text = get_prompt_text(bufnr, pos)
+  util.notify(user_text, vim.log.levels.DEBUG)
   if not user_text then
     return
   end
