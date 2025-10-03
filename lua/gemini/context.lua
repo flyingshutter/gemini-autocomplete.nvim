@@ -32,7 +32,7 @@ M.add_file = function(file_name, opts)
   -- add file to context
   local lines_table =  vim.fn.readfile(file_name)
   M.context[file_name] = lines_table
-  vim.notify(string.format("Gemini: Adding file of size %s: '", file_size) .. file_name .. "'", vim.log.levels.INFO)
+  vim.notify("Gemini: Adding file: '" .. file_name .. "'", vim.log.levels.INFO)
 end
 
 M.make_context_string = function(active_buf)
