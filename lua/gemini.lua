@@ -50,14 +50,15 @@ M.setup = function(opts)
     util.notify(vim.inspect(cmd_args), vim.log.levels.DEBUG)
     if cmd_args.args == 'model' then
       M.choose_model()
-    elseif
-      cmd_args.fargs[1] == 'add_file' then
+    elseif cmd_args.fargs[1] == 'add_file' then
       gemini_add_file(cmd_args)
+    elseif cmd_args.args == 'add_git_files' then
+      M.add_gitfiles()
     end
   end, {
     nargs = '+',
     complete = function(arglead, cmdline, cursorpos)
-      return { 'model', 'add_file' }
+      return { 'model', 'add_file', 'add_git_files' }
     end,
     desc = 'Gemini commands: set_model, add_file, show_files',
   })
@@ -142,6 +143,16 @@ end
 
 M.is_enabled = function()
   return config.get_config().completion.enabled
+end
+
+M.add_gitfiles = function()
+  local res = vim.fn.system("git ls-tree -r $(git branch --show-current) --name-only")
+  local git_filenames = util.split_string(res, '\n')
+  for _, file_name in ipairs(git_filenames) do
+    local file_name = vim.fn.fnamemodify(file_name, ":p")
+    context.add_file(file_name)
+  end
+
 end
 
 return M
