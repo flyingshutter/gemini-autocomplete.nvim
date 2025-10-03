@@ -1,13 +1,41 @@
+local util = require('gemini.util')
+
 local watchlist = {
 }
 
 local M = {}
 M.context = {}
 
-M.add_file = function(file_name)
-  if not M.context[file_name] then
-    M.context[file_name] =  vim.fn.readfile(file_name)
+M.add_file = function(file_name, opts)
+  opts = opts or {}
+  if M.context[file_name] then
+    vim.notify(string.format("Gemini: File already in context, skipping: '%s'", file_name), vim.log.levels.INFO)
+    return
   end
+  -- user has to confirm files bigger 1MB
+  local file_size = vim.fn.getfsize(file_name)
+  if file_size > math.pow(2,20) then
+    local decision = nil
+    if not _G.gemini.yes_to_all then
+      decision = vim.fn.input("\nFile " .. file_name .. "\n is bigger than 1MiB, really load it? [y]es, [n]o, [a]ll:  ")
+      print("\n")
+      if decision == 'a' or decision == 'A' then
+        _G.gemini.yes_to_all = true
+      end
+    end
+    if not (decision == 'y' or decision == 'Y' or _G.gemini.yes_to_all) then
+      return
+    end
+  end
+  -- load file and reject if it is binary
+  if not util.is_text_file(file_name) then
+    vim.notify(string.format("Gemini: Rejected binary file: '%s'", file_name), vim.log.levels.INFO)
+    return
+  end
+  -- add file to context
+  local lines_table =  vim.fn.readfile(file_name)
+  M.context[file_name] = lines_table
+  vim.notify(string.format("Gemini: Adding file of size %s: '", file_size) .. file_name .. "'", vim.log.levels.INFO)
 end
 
 M.make_context_string = function(active_buf)
@@ -25,6 +53,7 @@ vim.api.nvim_create_autocmd('BufWritePost', {
   group = 'astest',
   callback = function(opts)
     local buf = opts.buf
+    -- TODO: replace watchlist with M.context and test write on save:
     for _, watch_file_name in ipairs(watchlist) do
       -- print( watch_file_name .. "  " .. vim.api.nvim_buf_get_name(buf))
       if watch_file_name == vim.api.nvim_buf_get_name(buf) then

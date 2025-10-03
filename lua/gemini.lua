@@ -36,6 +36,8 @@ M.setup = function(opts)
     return
   end
 
+  _G.gemini = {}
+
   vim.api.nvim_create_augroup('Gemini', { clear = true })
 
   config.set_config(opts)
@@ -146,12 +148,14 @@ M.is_enabled = function()
 end
 
 M.add_gitfiles = function()
+  _G.gemini.yes_to_all = false
   local res = vim.fn.system("git ls-tree -r $(git branch --show-current) --name-only")
   local git_filenames = util.split_string(res, '\n')
   for _, file_name in ipairs(git_filenames) do
-    local file_name = vim.fn.fnamemodify(file_name, ":p")
+    file_name = vim.fn.fnamemodify(file_name, ":p")
     context.add_file(file_name)
   end
+  _G.gemini.yes_to_all = false
 
 end
 

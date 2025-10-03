@@ -76,4 +76,26 @@ M.split_string = function(inputstr, sep)
   return t
 end
 
+M.is_text_file = function(filepath)
+ if vim.fn.filereadable(filepath) == 0 then
+   return false -- File does not exist or is not readable
+ end
+
+ local f = io.open(filepath, "rb")
+ if not f then
+   return false -- Could not open file (e.g., permissions)
+ end
+
+ local content = f:read(1024)
+ f:close()
+
+ if not content then
+   return true -- Empty files are generally considered text files
+ end
+
+ -- 4. Check for the presence of a null byte ('\0')
+ -- Binary files almost always contain null bytes. Text files generally do not.
+ return not content:find("\0", 1, true)
+end
+
 return M
