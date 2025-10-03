@@ -154,6 +154,7 @@ M.toggle_enabled = function()
   else
     print('Gemini: Autocomplete disabled')
   end
+  vim.api.nvim_command 'redraw!'
 end
 
 M.is_enabled = function()
