@@ -55,4 +55,14 @@ M.is_nvim_version_ge = function(major, minor, patch)
   return false
 end
 
+M.notify = function(msg, level, opts)
+  level = level or vim.log.levels.INFO
+  opts = opts or nil
+  local notify_level = vim.g.notify_level or vim.log.levels.INFO
+
+  if level >= notify_level then
+    vim.notify(msg, level, opts)
+  end
+end
+
 return M

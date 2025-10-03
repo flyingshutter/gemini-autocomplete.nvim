@@ -1,8 +1,29 @@
 local config = require('gemini.config')
 local api = require('gemini.api')
 local util = require('gemini.util')
+local context = require('gemini.context')
 
 local M = {}
+
+local function gemini_add_file(cmd_args)
+  util.notify(vim.inspect(cmd_args.fargs), vim.log.levels.DEBUG)
+  if #cmd_args.fargs < 2 then
+    vim.notify('Error: Gemini add_file expected at least 1 filename', vim.log.levels.ERROR)
+    return
+  end
+  for idx = 2, #cmd_args.fargs do
+    local file_name = vim.fn.fnamemodify(vim.fn.expand(cmd_args.fargs[idx]), ":p")
+    util.notify("file_name is " .. file_name, vim.log.levels.DEBUG)
+    if file_name == "" then
+      vim.notify('Gemini Error: Save file before adding to context', vim.log.levels.ERROR)
+      return
+    end
+
+    util.notify("adding file " .. cmd_args.fargs[idx], vim.log.levels.DEBUG)
+    context.add_file(file_name)
+  end
+  util.notify(cmd_args.fargs[2], vim.log.levels.DEBUG)
+end
 
 M.setup = function(opts)
   if not vim.fn.executable('curl') then
@@ -26,15 +47,19 @@ M.setup = function(opts)
   end
 
   vim.api.nvim_create_user_command('Gemini', function(cmd_args)
+    util.notify(vim.inspect(cmd_args), vim.log.levels.DEBUG)
     if cmd_args.args == 'model' then
       M.choose_model()
+    elseif
+      cmd_args.fargs[1] == 'add_file' then
+      gemini_add_file(cmd_args)
     end
   end, {
     nargs = '+',
     complete = function(arglead, cmdline, cursorpos)
-      return { 'model' }
+      return { 'model', 'add_file' }
     end,
-    desc = 'My first command with arguments and autocompletion.',
+    desc = 'Gemini commands: set_model, add_file, show_files',
   })
 end
 

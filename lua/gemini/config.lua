@@ -28,7 +28,8 @@ M.config = {
     end,
     get_prompt = function(bufnr, pos)
       local filetype = vim.api.nvim_get_option_value('filetype', { buf = bufnr })
-      local prompt = 'Below is the content of a %s file `%s`:\n'
+      local prompt = 'Context:\n%s\n\n'
+        ..  'Instruction:\nBelow is the content of a %s file `%s`:\n'
         .. '```%s\n%s\n```\n\n'
         .. 'Suggest the most likely code at <cursor></cursor>.\n'
         .. 'Wrap your response in ``` ```\n'
@@ -45,7 +46,8 @@ M.config = {
       local code = vim.fn.join(lines, '\n')
       local abs_path = vim.api.nvim_buf_get_name(bufnr)
       local filename = vim.fn.fnamemodify(abs_path, ':.')
-      prompt = string.format(prompt, filetype, filename, filetype, code)
+      prompt = string.format(prompt, require'gemini.context'.make_context_string(), filetype, filename, filetype, code)
+      print(prompt)
       return prompt
     end,
   },
