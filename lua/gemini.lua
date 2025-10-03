@@ -162,8 +162,10 @@ end
 
 M.add_gitfiles = function()
   _G.gemini.yes_to_all = false
-  local res = vim.fn.system("git ls-tree -r $(git branch --show-current) --name-only")
+  local branch = vim.fn.system("git branch --show-current"):gsub("\n", "")
+  local res = vim.fn.system("git ls-tree -r " .. branch .. " --name-only")
   local git_filenames = util.split_string(res, '\n')
+  util.notify(vim.inspect(git_filenames), vim.log.levels.DEBUG)
   for _, file_name in ipairs(git_filenames) do
     file_name = vim.fn.fnamemodify(file_name, ":p")
     context.add_file(file_name)
