@@ -26,28 +26,14 @@ M.config = {
         .. '\n* Your task is to provide code suggestion at the cursor location marked by <cursor></cursor>.'
         .. '\n* Your response does not need to contain explaination.'
     end,
-    get_prompt = function(bufnr, pos)
-      local filetype = vim.api.nvim_get_option_value('filetype', { buf = bufnr })
-      local prompt = 'Context:\n%s\n\n'
-        ..  'Instruction:\nBelow is the content of a %s file `%s`:\n'
-        .. '```%s\n%s\n```\n\n'
-        .. 'Suggest the most likely code at <cursor></cursor>.\n'
-        .. 'Wrap your response in ``` ```\n'
-        .. 'eg.\n```\n```\n\n'
-      local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-      local line = pos[1]
-      local col = pos[2]
-      local target_line = lines[line]
-      if target_line then
-        lines[line] = target_line:sub(1, col) .. '<cursor></cursor>' .. target_line:sub(col + 1)
-      else
-        return nil
-      end
-      local code = vim.fn.join(lines, '\n')
-      local abs_path = vim.api.nvim_buf_get_name(bufnr)
-      local filename = vim.fn.fnamemodify(abs_path, ':.')
-      prompt = string.format(prompt, require'gemini.context'.make_context_string(), filetype, filename, filetype, code)
-      return prompt
+    get_prompt = function(buf, pos)
+      local context = require'gemini.context'
+      return 'Your task is to write code. Do not format the code in any way, just give plain text output. I will give you:\n'
+                  .. '1) some important files as context\n'
+                  .. '2) the file we are currently editing, where the cursor position is marked by <cursor></cursor>\n'
+                  .. 'Return the most likely completion at the cursor\n\n'
+                  .. '1)\n' .. context.make_context_string() .. '\n\n'
+                  .. '2)\n' .. context.make_current_file_string(buf, pos) .. '\n\n'
     end,
   },
 }
