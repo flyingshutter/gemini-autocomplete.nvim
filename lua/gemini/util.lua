@@ -77,25 +77,57 @@ M.split_string = function(inputstr, sep)
 end
 
 M.is_text_file = function(filepath)
- if vim.fn.filereadable(filepath) == 0 then
-   return false -- File does not exist or is not readable
- end
+  if vim.fn.filereadable(filepath) == 0 then
+    return false -- File does not exist or is not readable
+  end
 
- local f = io.open(filepath, "rb")
- if not f then
-   return false -- Could not open file (e.g., permissions)
- end
+  local f = io.open(filepath, "rb")
+  if not f then
+    return false -- Could not open file (e.g., permissions)
+  end
 
- local content = f:read(1024)
- f:close()
+  local content = f:read(1024)
+  f:close()
 
- if not content then
-   return true -- Empty files are generally considered text files
- end
+  if not content then
+    return true -- Empty files are generally considered text files
+  end
 
- -- 4. Check for the presence of a null byte ('\0')
- -- Binary files almost always contain null bytes. Text files generally do not.
- return not content:find("\0", 1, true)
+  -- 4. Check for the presence of a null byte ('\0')
+  -- Binary files almost always contain null bytes. Text files generally do not.
+  return not content:find("\0", 1, true)
+end
+
+M.get_list_differences = function (old_list, new_list)
+  local added = {}
+  local removed = {}
+
+  -- Create a set (using a table) for efficient lookup of values in the old_list
+  local old_values_set = {}
+  for _, value in ipairs(old_list) do
+    old_values_set[value] = (old_values_set[value] or 0) + 1 -- Count occurrences if duplicates are possible
+  end
+
+  -- Find added values (present in new_list but not in old_list)
+  -- And decrement count for values present in both
+  for _, new_value in ipairs(new_list) do
+    if old_values_set[new_value] and old_values_set[new_value] > 0 then
+      -- Value exists in old_list, mark it as "seen" by decrementing
+      old_values_set[new_value] = old_values_set[new_value] - 1
+    else
+      -- Value is not in old_list, or all its occurrences have been matched
+      table.insert(added, new_value)
+    end
+  end
+
+  -- Any remaining values in old_values_set are the "removed" ones
+  for old_value, count in pairs(old_values_set) do
+    for i = 1, count do
+      table.insert(removed, old_value)
+    end
+  end
+
+  return added, removed
 end
 
 return M
