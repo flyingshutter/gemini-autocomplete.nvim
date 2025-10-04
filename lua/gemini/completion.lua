@@ -69,30 +69,19 @@ M.request_code = function ()
 
   util.notify(user_text, vim.log.levels.DEBUG)
 
-  api.gemini_generate_content(user_text, system_text, model_id, generation_config, function(result)
-    local json_text = result.stdout
-    if json_text and #json_text > 0 then
-      local model_response = vim.json.decode(json_text)
-      model_response = vim.tbl_get(model_response, 'candidates', 1, 'content', 'parts', 1, 'text')
-      if model_response ~= nil and #model_response > 0 then
-        vim.schedule(function()
-          if model_response then
-            local response_lines = util.split_string(model_response, '\n')
-            util.notify(vim.inspect(response_lines), vim.log.levels.DEBUG)
+  api.gemini_generate_content(user_text, system_text, model_id, generation_config, function(model_response)
+    local response_lines = util.split_string(model_response, '\n')
 
-            local current_pos = vim.api.nvim_win_get_cursor(win)
-            if current_pos[1] ~= pos[1] or current_pos[2] ~= pos[2] then
-              util.notify("Cursor moved since request. Did not insert result", vim.log.levels.WARN)
-              return
-            end
-            util.notify("Done. Result inserted below cursor.", vim.log.levels.INFO)
-            vim.api.nvim_buf_set_lines(active_buf, pos[1], pos[1], false, response_lines)
-          end
-        end)
+    vim.schedule(function()
+      local current_pos = vim.api.nvim_win_get_cursor(win)
+      if current_pos[1] ~= pos[1] or current_pos[2] ~= pos[2] then
+        util.notify("Cursor moved since request. Did not insert result", vim.log.levels.WARN)
+        return
       end
-    end
+      util.notify("Done. Result inserted below cursor.", vim.log.levels.INFO)
+      vim.api.nvim_buf_set_lines(active_buf, pos[1], pos[1], false, response_lines)
+    end)
   end)
-
 end
 
 M._gemini_complete = function()
@@ -113,23 +102,10 @@ M._gemini_complete = function()
 
   local generation_config = config.get_gemini_generation_config()
   local model_id = config.get_config().model.model_id
-  api.gemini_generate_content(user_text, system_text, model_id, generation_config, function(result)
-    local json_text = result.stdout
-    if vim.g.gemini_debug then
-      print(json_text)
-    end
-    if json_text and #json_text > 0 then
-      local model_response = vim.json.decode(json_text)
-      model_response = vim.tbl_get(model_response, 'candidates', 1, 'content', 'parts', 1, 'text')
-      if model_response ~= nil and #model_response > 0 then
-        vim.schedule(function()
-          if model_response then
-            local response_lines = util.split_string(model_response, '\n')
-            M.show_completion_result(model_response, win, pos)
-          end
-        end)
-      end
-    end
+  api.gemini_generate_content(user_text, system_text, model_id, generation_config, function(model_response)
+    vim.schedule(function()
+      M.show_completion_result(model_response, win, pos)
+    end)
   end)
 end
 

@@ -14,16 +14,22 @@ M.MODELS = {
   GEMINI_2_0_FLASH_LITE = 'gemini-2.0-flash-lite',
 }
 
-local function handle_error(obj, callback)
+local function handle_result(obj, callback)
   local json_text = obj.stdout
-  if json_text and #json_text > 0 then
-    local model_response = vim.json.decode(json_text)
-    local model_error = vim.tbl_get(model_response, 'error')
-    if model_error then
-      error('Gemini reported an error\n' .. vim.inspect(model_error))
-    end
+  if not (json_text and #json_text > 0) then
+    return
   end
-  callback(obj)
+  local model_response = vim.json.decode(json_text)
+  local model_error = vim.tbl_get(model_response, 'error')
+  if model_error then
+    error('Gemini reported an error\n' .. vim.inspect(model_error))
+  end
+  model_response = vim.tbl_get(model_response, 'candidates', 1, 'content', 'parts', 1, 'text')
+  if not (model_response and #model_response > 0) then
+    return
+  end
+  print(vim.inspect(model_response))
+  callback(model_response)
 end
 
 M.gemini_generate_content = function(user_text, system_text, model_name, generation_config, callback)
@@ -64,7 +70,7 @@ M.gemini_generate_content = function(user_text, system_text, model_name, generat
   local opts = { stdin = json_text }
   if callback then
     return vim.system(cmd, opts, function(obj)
-      handle_error(obj, callback)
+      handle_result(obj, callback)
     end)
   else
     return vim.system(cmd, opts)
