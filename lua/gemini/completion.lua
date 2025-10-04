@@ -1,10 +1,11 @@
 local config = require('gemini.config')
 local util = require('gemini.util')
 local api = require('gemini.api')
+local context = require('gemini.context')
 
 local M = {}
 
-local context = {
+local gemini_context = {
   namespace_id = nil,
   completion = nil,
 }
@@ -13,7 +14,7 @@ M.setup = function()
   local blacklist_filetypes = config.get_config().completion.blacklist_filetypes
   local blacklist_filenames = config.get_config().completion.blacklist_filenames
 
-  context.namespace_id = vim.api.nvim_create_namespace('gemini_completion')
+  gemini_context.namespace_id = vim.api.nvim_create_namespace('gemini_completion')
 
   vim.api.nvim_create_autocmd('CursorMovedI', {
     group = 'Gemini',
@@ -42,6 +43,58 @@ local get_prompt_text = function(bufnr, pos)
     return nil
   end
   return get_prompt(bufnr, pos)
+end
+
+M.request_code = function ()
+  local active_buf = vim.api.nvim_get_current_buf()
+  local win = vim.api.nvim_get_current_win()
+  local pos = vim.api.nvim_win_get_cursor(win)
+  local context_string = context.make_context_string(active_buf)
+  local generation_config = config.get_gemini_generation_config()
+  local model_id = config.get_config().model.model_id
+
+  local system_text = nil
+  local get_system_text = config.get_config().completion.get_system_text
+  if get_system_text then
+    system_text = get_system_text()
+  end
+
+  local user_prompt = vim.fn.input("Prompt please: ")
+
+  local user_text = 'Your task is to write code as prompted by the user. Do not format the code in any way, just give plain text output. I will give you:\n'
+    .. '1) some important files as context\n2) the file we are currently editing, where the cursor position is marked by <cursor></cursor>\n'
+    .. '3) the user prompt.\n\n1)\n'
+    .. context_string .. "\n\n2)\n" .. context.make_current_file_string(active_buf, pos) .. '\n\n3)\n'
+    .. user_prompt
+
+  util.notify(user_text, vim.log.levels.DEBUG)
+
+  api.gemini_generate_content(user_text, system_text, model_id, generation_config, function(result)
+    local json_text = result.stdout
+    if json_text and #json_text > 0 then
+      local model_response = vim.json.decode(json_text)
+      model_response = vim.tbl_get(model_response, 'candidates', 1, 'content', 'parts', 1, 'text')
+      if model_response ~= nil and #model_response > 0 then
+        vim.schedule(function()
+          if model_response then
+            -- model_response = util.strip_code(model_response)
+            -- model_response = vim.fn.join(model_response, '\n\n')
+            local response_lines = util.split_string(model_response, '\n')
+            util.notify(vim.inspect(response_lines), vim.log.levels.DEBUG)
+
+            local current_pos = vim.api.nvim_win_get_cursor(win)
+            if current_pos[1] ~= pos[1] or current_pos[2] ~= pos[2] then
+              util.notify("Cursor moved since request. Did not insert result", vim.log.levels.WARN)
+              return
+            end
+            util.notify("Done. Result inserted below cursor.", vim.log.levels.INFO)
+            vim.api.nvim_buf_set_lines(active_buf, pos[1], pos[1], false, response_lines)
+          end
+        end)
+      end
+    end
+  end)
+
 end
 
 M._gemini_complete = function()
@@ -145,9 +198,9 @@ M.show_completion_result = function(result, win_id, pos)
   end
   local row = pos[1]
   local col = pos[2]
-  local id = vim.api.nvim_buf_set_extmark(bufnr, context.namespace_id, row - 1, col, options)
+  local id = vim.api.nvim_buf_set_extmark(bufnr, gemini_context.namespace_id, row - 1, col, options)
 
-  context.completion = {
+  gemini_context.completion = {
     content = content,
     row = row,
     col = col,
@@ -157,8 +210,8 @@ M.show_completion_result = function(result, win_id, pos)
   vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI', 'InsertLeavePre' }, {
     buffer = bufnr,
     callback = function()
-      context.completion = nil
-      vim.api.nvim_buf_del_extmark(bufnr, context.namespace_id, id)
+      gemini_context.completion = nil
+      vim.api.nvim_buf_del_extmark(bufnr, gemini_context.namespace_id, id)
       vim.api.nvim_command('redraw')
     end,
     once = true,
@@ -166,19 +219,19 @@ M.show_completion_result = function(result, win_id, pos)
 end
 
 M.insert_completion_result = function()
-  if not context.completion then
+  if not gemini_context.completion then
     return
   end
 
   local bufnr = vim.api.nvim_get_current_buf()
-  if not context.completion.bufnr == bufnr then
+  if not gemini_context.completion.bufnr == bufnr then
     return
   end
 
-  local row = context.completion.row - 1
-  local col = context.completion.col
+  local row = gemini_context.completion.row - 1
+  local col = gemini_context.completion.col
   local first_line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1]
-  local lines = vim.split(context.completion.content, '\n')
+  local lines = vim.split(gemini_context.completion.content, '\n')
   lines[1] = string.sub(first_line, 1, col) .. lines[1] .. string.sub(first_line, col + 1)
   vim.api.nvim_buf_set_lines(bufnr, row, row + 1, false, lines)
 
@@ -188,7 +241,7 @@ M.insert_completion_result = function()
     vim.api.nvim_win_set_cursor(0, { new_row, new_col })
   end
 
-  context.completion = nil
+  gemini_context.completion = nil
 end
 
 return M

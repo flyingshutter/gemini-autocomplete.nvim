@@ -43,10 +43,28 @@ M.make_context_string = function(active_buf)
   local context_string = ""
   for file_name, line_list in pairs(M.context) do
     local file_content = table.concat(line_list, '\n')
-    local file_context_string = "Filename: " .. file_name .. "\nContent:\n" .. file_content .. "\n\n"
+    local file_context_string = "Filename: " .. file_name .. "\n" .. file_content .. "\n"
     context_string = context_string .. file_context_string
   end
   return context_string
+end
+
+M.make_current_file_string = function(buf, pos)
+  local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+  local line = pos[1]
+  local col = pos[2]
+  local target_line = lines[line]
+  if target_line then
+    lines[line] = target_line:sub(1, col) .. '<cursor></cursor>' .. target_line:sub(col + 1)
+  else
+    return nil
+  end
+
+  local code = vim.fn.join(lines, '\n')
+  local abs_path = vim.api.nvim_buf_get_name(buf)
+  local filename = vim.fn.fnamemodify(abs_path, ':.')
+
+  return 'Filename: ' .. filename .. '\n' .. code .. '\n'
 end
 
 return M

@@ -2,6 +2,7 @@ local config = require('gemini.config')
 local api = require('gemini.api')
 local util = require('gemini.util')
 local context = require('gemini.context')
+local completion = require('gemini.completion')
 
 local M = {}
 
@@ -71,13 +72,15 @@ M.setup = function(opts)
       M.add_gitfiles()
     elseif cmd_args.args == 'edit_context' then
       M.edit_context()
+    elseif cmd_args.args == 'request_code' then
+      completion.request_code()
     end
   end, {
     nargs = '+',
     complete = function(arglead, cmdline, cursorpos)
-      return { 'model', 'add_file', 'add_git_files', 'edit_context' }
+      return { 'model', 'add_file', 'add_git_files', 'edit_context', 'request_code' }
     end,
-    desc = 'Gemini commands: set_model, add_file, add_gitfiles, edit_context',
+    desc = 'Gemini commands: set_model, add_file, add_gitfiles, edit_context, request_code'
   })
 end
 
