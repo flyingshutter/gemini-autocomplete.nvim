@@ -11,6 +11,10 @@ M.add_file = function(file_name, opts)
   end
   -- user has to confirm files bigger 1MB
   local file_size = vim.fn.getfsize(file_name)
+  if file_size == -1 then
+    util.notify(string.format("Gemini: File not found: '%s'", file_name), vim.log.levels.ERROR)
+    return
+  end
   if file_size > math.pow(2,20) then
     local decision = nil
     if not _G.gemini.yes_to_all then
@@ -26,7 +30,7 @@ M.add_file = function(file_name, opts)
   end
   -- load file and reject if it is binary
   if not util.is_text_file(file_name) then
-    vim.notify(string.format("Gemini: Rejected binary file: '%s'", file_name), vim.log.levels.INFO)
+    vim.notify(string.format("Gemini: Rejected binary file: '%s'", file_name), vim.log.levels.ERROR)
     return
   end
   -- add file to context
