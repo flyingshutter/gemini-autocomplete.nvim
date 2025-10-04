@@ -69,19 +69,23 @@ M.setup = function(opts)
       gemini_add_file(cmd_args)
     elseif cmd_args.args == 'add_git_files' then
       M.add_gitfiles()
+    elseif cmd_args.args == 'edit_context' then
+      M.edit_context()
     end
   end, {
     nargs = '+',
     complete = function(arglead, cmdline, cursorpos)
-      return { 'model', 'add_file', 'add_git_files' }
+      return { 'model', 'add_file', 'add_git_files', 'edit_context' }
     end,
-    desc = 'Gemini commands: set_model, add_file, show_files',
+    desc = 'Gemini commands: set_model, add_file, add_gitfiles, edit_context',
   })
 end
 
-local function win_config()
-  local width = 80
-  local height = 5
+local function win_config(buf, opts)
+  opts = opts or {}
+  opts = vim.tbl_deep_extend('force', {size = {60,20}, title = 'Unnamed Window'}, opts)
+  local width = opts.size[1]
+  local height = opts.size[2]
   return {
     relative = 'editor',
     width = width,
@@ -89,8 +93,43 @@ local function win_config()
     col = math.floor((vim.o.columns - width) / 2),
     row = math.floor((vim.o.lines - height) / 2),
     border = 'rounded',
-    title = 'Select Gemini Model',
+    title = opts.title .. '(q: abort, <Enter>: confirm)',
   }
+end
+
+M.edit_context = function ()
+  local buf = vim.api.nvim_create_buf(false, true)
+  local file_names = {}
+  for file_name, _ in pairs(context.context) do
+    table.insert(file_names, file_name)
+  end
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, file_names)
+  local height = math.min(vim.o.lines - 3, math.max(40, vim.api.nvim_buf_line_count(buf)))
+  vim.api.nvim_open_win(buf, true, win_config(buf, {size = {90,height}, title = 'Edit files'}))
+
+  vim.keymap.set('n', 'q', function()
+    vim.api.nvim_win_close(0, false)
+  end, { buffer = buf, desc = 'Abort' })
+
+  vim.keymap.set('n', '<CR>', function()
+    local file_names = {}
+    for file_name, _ in pairs(context.context) do
+      table.insert(file_names, file_name)
+    end
+    local buf = vim.api.nvim_get_current_buf()
+    local new_file_names = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+    local added, removed = util.get_list_differences(file_names, new_file_names)
+
+    for _, file_name in ipairs(added) do
+       context.add_file(file_name)
+    end
+
+    for _, file_name in ipairs(removed) do
+      context.context[file_name] = nil
+    end
+
+    vim.api.nvim_win_close(0, false)
+  end, { buffer = buf, desc = 'Confirm' })
 end
 
 M.choose_model = function()
@@ -101,17 +140,18 @@ M.choose_model = function()
 
   local buf = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, available_models)
-  vim.api.nvim_open_win(buf, true, win_config())
+  local height = math.min(vim.o.lines - 3, vim.api.nvim_buf_line_count(buf))
+  vim.api.nvim_open_win(buf, true, win_config(buf, { size = {40, height}, title = 'Choose Model'}))
 
   vim.keymap.set('n', 'q', function()
     vim.api.nvim_win_close(0, false)
-  end, { buffer = buf, desc = 'Close Floating [W]in' })
+  end, { buffer = buf, desc = 'Abort' })
 
   vim.keymap.set('n', '<CR>', function()
     local line = vim.api.nvim_get_current_line()
     config.set_config({ model = { model_id = line } })
     vim.api.nvim_win_close(0, false)
-  end, { buffer = buf, desc = 'Close Floating [W]in' })
+  end, { buffer = buf, desc = 'Confirm' })
 end
 
 M.mini_statusline = function()
@@ -172,7 +212,6 @@ M.add_gitfiles = function()
     context.add_file(file_name)
   end
   _G.gemini.yes_to_all = false
-
 end
 
 return M
