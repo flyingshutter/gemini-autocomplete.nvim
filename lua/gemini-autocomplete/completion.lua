@@ -1,7 +1,7 @@
-local config = require('gemini.config')
-local util = require('gemini.util')
-local api = require('gemini.api')
-local context = require('gemini.context')
+local config = require('gemini-autocomplete.config')
+local util = require('gemini-autocomplete.util')
+local api = require('gemini-autocomplete.api')
+local context = require('gemini-autocomplete.context')
 
 local M = {}
 
@@ -86,7 +86,7 @@ end
 local can_autocomplete = config.get_config().completion.can_autocomplete
 
 M.gemini_complete = util.debounce(function()
-  if not require('gemini.config').config.completion.enabled then
+  if not require('gemini-autocomplete.config').config.completion.enabled then
     return
   end
 

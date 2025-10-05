@@ -1,5 +1,5 @@
-local api = require('gemini.api')
-local util = require('gemini.util')
+local api = require('gemini-autocomplete.api')
+local util = require('gemini-autocomplete.util')
 
 describe('api', function()
   it('should send message', function()
