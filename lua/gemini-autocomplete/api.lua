@@ -1,4 +1,4 @@
-local util = require('gemini.util')
+local util = require('gemini-autocomplete.util')
 
 local uv = vim.loop or vim.uv
 

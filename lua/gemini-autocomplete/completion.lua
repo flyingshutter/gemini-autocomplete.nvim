@@ -86,7 +86,6 @@ end
 local can_autocomplete = config.get_config().completion.can_autocomplete
 
 M.gemini_complete = util.debounce(function()
-  -- if not require('gemini').enabled then
   if not require('gemini.config').config.completion.enabled then
     return
   end

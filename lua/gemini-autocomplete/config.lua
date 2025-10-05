@@ -1,5 +1,5 @@
-local api = require('gemini.api')
-local util = require('gemini.util')
+local api = require('gemini-autocomplete.api')
+local util = require('gemini-autocomplete.util')
 
 local M = {}
 
@@ -16,7 +16,7 @@ M.config = {
   },
   prompt_code = {
     make_prompt = function(buf, pos, user_prompt)
-      local context = require('gemini.context')
+      local context = require('gemini-autocomplete.context')
       return 'Your task is to write code as prompted by the user. Return only the code. I will give you:\n'
         .. '1) some important files as context\n'
         .. '2) the file we are currently editing, where the cursor position is marked by <cursor></cursor>\n'
@@ -42,7 +42,7 @@ M.config = {
       return vim.fn.pumvisible() ~= 1
     end,
     make_prompt = function(buf, pos)
-      local context = require('gemini.context')
+      local context = require('gemini-autocomplete.context')
       return 'Your task is to write code. Return only the code. I will give you:\n'
         .. '1) some important files as context\n'
         .. '2) the file we are currently editing, where the cursor position is marked by <cursor></cursor>\n'
