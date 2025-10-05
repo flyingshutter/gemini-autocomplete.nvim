@@ -38,7 +38,9 @@ M.config = {
     completion_delay = 800,
     insert_result_key = '<S-Tab>',
     move_cursor_end = true,
-    can_complete = nil,
+    can_autocomplete = function()
+      return vim.fn.pumvisible() ~= 1
+    end,
     make_prompt = function(buf, pos)
       local context = require('gemini.context')
       return 'Your task is to write code. Return only the code. I will give you:\n'

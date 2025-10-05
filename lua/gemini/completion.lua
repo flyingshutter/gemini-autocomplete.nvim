@@ -83,9 +83,7 @@ M._gemini_complete = function()
   end)
 end
 
-local can_complete = config.get_config().completion.can_complete or function()
-  return vim.fn.pumvisible() ~= 1
-end
+local can_autocomplete = config.get_config().completion.can_autocomplete
 
 M.gemini_complete = util.debounce(function()
   -- if not require('gemini').enabled then
@@ -97,7 +95,7 @@ M.gemini_complete = util.debounce(function()
     return
   end
 
-  if not can_complete() then
+  if not can_autocomplete() then
     return
   end
 
@@ -121,7 +119,7 @@ M.show_completion_result = function(result, win_id, pos)
     return
   end
 
-  if not can_complete() then
+  if not can_autocomplete() then
     return
   end
 
