@@ -5,12 +5,11 @@ local M = {}
 
 M.config = {
   general = {
-    mini_statusline = nil,
+    mini_statusline = false,
   },
   model = {
     model_id = api.MODELS.GEMINI_2_5_FLASH_LITE,
     temperature = 1,
-    -- top_k = 128,
     response_mime_type = 'text/plain',
     get_system_text = function()
       return "You are a coding AI assistant that autocomplete user's code."
@@ -70,7 +69,6 @@ end
 M.get_gemini_generation_config = function()
   return {
     temperature = M.get_config().model.temperature,
-    -- topK = M.get_config().model.top_k,
     response_mime_type = M.get_config().model.response_mime_type,
   }
 end
