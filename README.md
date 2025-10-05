@@ -1,6 +1,8 @@
 # gemini-autocomplete.nvim
 Codebase aware autocomplete and code prompting using Gemini.  
 
+https://github.com/user-attachments/assets/6dde2004-aaf8-4987-814f-53aca623eada
+
 ## Features 
 - Choose model (gemini-2.5-pro, gemini-2.5-flash, gemini-2.5-flash-lite, gemini-2.0-flash, gemini-2.0-flash-lite)
 - Context aware: Manage known files manually or let git do the job
@@ -127,3 +129,7 @@ opts = {
 ```
 # Thanks
 This is a heavily altered fork of https://github.com/kiddos/gemini.nvim
+
+
+
+
