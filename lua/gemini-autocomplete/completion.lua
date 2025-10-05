@@ -17,7 +17,7 @@ M.setup = function()
   gemini_context.namespace_id = vim.api.nvim_create_namespace('gemini_completion')
 
   vim.api.nvim_create_autocmd('CursorMovedI', {
-    group = 'Gemini',
+    group = 'Gemini-autocomplete',
     callback = function()
       local buf = vim.api.nvim_get_current_buf()
       local filetype = vim.api.nvim_get_option_value('filetype', { buf = buf })
