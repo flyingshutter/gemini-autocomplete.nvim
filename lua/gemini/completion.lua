@@ -45,7 +45,7 @@ M.request_code = function()
   local user_text = config.get_config().request_code.make_prompt(buf, pos, user_prompt)
   util.notify(user_text, vim.log.levels.DEBUG)
 
-  local system_text = config.get_config().completion.get_system_text()
+  local system_text = config.get_config().model.get_system_text()
   local model_id = config.get_config().model.model_id
   local generation_config = config.get_gemini_generation_config()
 
@@ -70,7 +70,7 @@ M._gemini_complete = function()
   local user_text = config.get_config().completion.make_prompt(buf, pos)
   util.notify(user_text, vim.log.levels.DEBUG)
 
-  local system_text = config.get_config().completion.get_system_text()
+  local system_text = config.get_config().model.get_system_text()
   local model_id = config.get_config().model.model_id
   local generation_config = config.get_gemini_generation_config()
 

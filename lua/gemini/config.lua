@@ -12,6 +12,11 @@ M.config = {
     temperature = 1,
     -- top_k = 128,
     response_mime_type = 'text/plain',
+    get_system_text = function()
+      return "You are a coding AI assistant that autocomplete user's code."
+        .. '\n* Your task is to provide code suggestion at the cursor location marked by <cursor></cursor>.'
+        .. '\n* Your response does not need to contain explaination.'
+    end,
   },
   request_code = {
     make_prompt = function(buf, pos, user_prompt)
@@ -38,11 +43,6 @@ M.config = {
     insert_result_key = '<S-Tab>',
     move_cursor_end = true,
     can_complete = nil,
-    get_system_text = function()
-      return "You are a coding AI assistant that autocomplete user's code."
-        .. '\n* Your task is to provide code suggestion at the cursor location marked by <cursor></cursor>.'
-        .. '\n* Your response does not need to contain explaination.'
-    end,
     make_prompt = function(buf, pos)
       local context = require('gemini.context')
       return 'Your task is to write code. Return only the code. I will give you:\n'
