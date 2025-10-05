@@ -1,11 +1,11 @@
 -- TODO:
 -- general file structure
 -- tests
-local config = require('gemini.config')
-local api = require('gemini.api')
-local util = require('gemini.util')
-local context = require('gemini.context')
-local completion = require('gemini.completion')
+local config = require('gemini-autocomplete.config')
+local api = require('gemini-autocomplete.api')
+local util = require('gemini-autocomplete.util')
+local context = require('gemini-autocomplete.context')
+local completion = require('gemini-autocomplete.completion')
 
 local M = {}
 
@@ -65,7 +65,7 @@ M.setup = function(opts)
 
   config.set_config(opts)
   -- M.enabled = config.get_config().completion.enabled
-  require('gemini.completion').setup()
+  require('gemini-autocomplete.completion').setup()
 
   vim.api.nvim_create_autocmd('BufWritePost', {
     group = 'Gemini',
