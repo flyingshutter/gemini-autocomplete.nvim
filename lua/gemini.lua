@@ -13,15 +13,34 @@ local function gemini_add_file(cmd_args)
     return
   end
   for idx = 2, #cmd_args.fargs do
-    local file_name = vim.fn.fnamemodify(vim.fn.expand(cmd_args.fargs[idx]), ':p')
-    util.notify('file_name is ' .. file_name, vim.log.levels.DEBUG)
+    local file_name = vim.fn.expand(cmd_args.fargs[idx])
     if file_name == '' then
-      vim.notify('Gemini Error: Save file before adding to context', vim.log.levels.ERROR)
+      vim.notify('Gemini Error: filepath expands to empty string (common mistake: a new file has to be saved once before adding)', vim.log.levels.ERROR)
       return
     end
+    util.notify('file_name is ' .. file_name, vim.log.levels.DEBUG)
 
-    util.notify('adding file ' .. cmd_args.fargs[idx], vim.log.levels.DEBUG)
     context.add_file(file_name)
+  end
+  util.notify(cmd_args.fargs[2], vim.log.levels.DEBUG)
+end
+
+local function gemini_remove_file(cmd_args)
+  util.notify(vim.inspect(cmd_args.fargs), vim.log.levels.DEBUG)
+  if #cmd_args.fargs < 2 then
+    vim.notify('Error: Gemini add_file expected at least 1 filename', vim.log.levels.ERROR)
+    return
+  end
+  for idx = 2, #cmd_args.fargs do
+    local file_name = vim.fn.expand(cmd_args.fargs[idx])
+    if file_name == '' then
+      vim.notify('Gemini Error: filepath expands to empty string', vim.log.levels.ERROR)
+      return
+    end
+    file_name = vim.fn.fnamemodify(file_name, ':p')
+    util.notify('file_name is ' .. file_name, vim.log.levels.DEBUG)
+
+    context.remove_file(file_name)
   end
   util.notify(cmd_args.fargs[2], vim.log.levels.DEBUG)
 end
@@ -67,6 +86,8 @@ M.setup = function(opts)
       M.choose_model()
     elseif cmd_args.fargs[1] == 'add_file' then
       gemini_add_file(cmd_args)
+    elseif cmd_args.fargs[1] == 'remove_file' then
+      gemini_remove_file(cmd_args)
     elseif cmd_args.args == 'add_git_files' then
       M.add_gitfiles()
     elseif cmd_args.args == 'edit_context' then
@@ -79,9 +100,9 @@ M.setup = function(opts)
   end, {
     nargs = '+',
     complete = function(arglead, cmdline, cursorpos)
-      return { 'choose_model', 'add_file', 'add_git_files', 'edit_context', 'request_code' }
+      return { 'choose_model', 'add_file', 'remove_file', 'add_git_files', 'edit_context', 'request_code' }
     end,
-    desc = 'Gemini commands: choose_model, add_file, add_gitfiles, edit_context, request_code',
+    desc = 'Gemini commands: choose_model, add_file, remove_file, add_git_files, edit_context, request_code',
   })
 end
 

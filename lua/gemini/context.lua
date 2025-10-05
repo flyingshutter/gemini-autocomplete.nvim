@@ -4,6 +4,7 @@ local M = {}
 M.context = {}
 
 M.add_file = function(file_name)
+  file_name = vim.fn.fnamemodify(file_name, ':p')
   if M.context[file_name] then
     vim.notify(string.format("Gemini: File already in context, skipping: '%s'", file_name), vim.log.levels.INFO)
     return
@@ -35,7 +36,16 @@ M.add_file = function(file_name)
   -- add file to context
   local lines_table = vim.fn.readfile(file_name)
   M.context[file_name] = lines_table
-  vim.notify("Gemini: Adding file: '" .. file_name .. "'", vim.log.levels.INFO)
+  vim.notify("Gemini: Added file: '" .. file_name .. "'", vim.log.levels.INFO)
+end
+
+M.remove_file = function(file_name)
+  file_name = vim.fn.fnamemodify(file_name, ':p')
+  if not M.context[file_name] then
+    vim.notify('File not found in context', vim.log.levels.ERROR)
+  end
+  vim.notify("Gemini: Removed file: '" .. file_name .. "'", vim.log.levels.INFO)
+  M.context[file_name] = nil
 end
 
 M.make_context_string = function(active_buf)
