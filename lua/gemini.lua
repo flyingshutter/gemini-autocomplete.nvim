@@ -1,3 +1,6 @@
+-- TODO:
+-- general file structure
+-- tests
 local config = require('gemini.config')
 local api = require('gemini.api')
 local util = require('gemini.util')
