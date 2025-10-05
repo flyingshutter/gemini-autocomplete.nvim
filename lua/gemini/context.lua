@@ -3,8 +3,7 @@ local util = require('gemini.util')
 local M = {}
 M.context = {}
 
-M.add_file = function(file_name, opts)
-  opts = opts or {}
+M.add_file = function(file_name)
   if M.context[file_name] then
     vim.notify(string.format("Gemini: File already in context, skipping: '%s'", file_name), vim.log.levels.INFO)
     return
