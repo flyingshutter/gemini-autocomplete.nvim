@@ -4,9 +4,6 @@ local util = require('gemini.util')
 local M = {}
 
 M.config = {
-  general = {
-    make_statusline = false,
-  },
   model = {
     model_id = api.MODELS.GEMINI_2_5_FLASH_LITE,
     temperature = 1,
