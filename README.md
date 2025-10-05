@@ -1,4 +1,4 @@
-# gemini.nvim
+# gemini-autocomplete.nvim
 Codebase aware autocomplete and code prompting using Gemini.  
 
 ## Features 
@@ -18,12 +18,12 @@ export GEMINI_API_KEY="<your API key here>"
 
 ### [lazy.nvim](https://github.com/folke/lazy.nvim)
 ```lua
-{ 'flyingshutter/gemini.nvim', opts = {} }
+{ 'flyingshutter/gemini-autocomplete.nvim', opts = {} }
 ```
 
 ### [packer.nvim](https://github.com/wbthomason/packer.nvim)
 ```lua
-use { 'flyingshutter/gemini.nvim', opts = {} }
+use { 'flyingshutter/gemini-autocomplete.nvim', opts = {} }
 ```
 ## User interface
 ```vim
@@ -42,19 +42,19 @@ use { 'flyingshutter/gemini.nvim', opts = {} }
 * Disable autocompletion on start
 ```lua
   {
-    'flyingshutter/gemini.nvim/',
+    'flyingshutter/gemini-autocomplete.nvim/',
     config = function()
-      local gemini = require 'gemini'
+      local gemini = require 'gemini-autocomplete'
       gemini.setup {
-        general = { make_statusline = require('gemini.external').make_mini_statusline },
+        general = { make_statusline = require('gemini-autocomplete.external').make_mini_statusline },
         model = {
-          model_id = require('gemini.api').MODELS.GEMINI_2_5_FLASH_LITE,
+          model_id = require('gemini-autocomplete.api').MODELS.GEMINI_2_5_FLASH_LITE,
         },
         -- I like to have it disabled on startup and manually activate when needed (free tier user, quota matters)
         completion = { enabled = false },
       }
 
-      require('gemini.external').make_mini_statusline() -- show gemini in statusline and indicate (en/dis)abled
+      require('gemini-autocomplete.external').make_mini_statusline() -- show gemini in statusline and indicate (en/dis)abled
 
       vim.keymap.set('n', '<leader>gt', gemini.toggle_enabled, { desc = '[G]emini [T]oggle Autocompletion' })
       vim.keymap.set('n', '<leader>gg', gemini.add_gitfiles, { desc = '[G]emini add [G]itfiles' })
