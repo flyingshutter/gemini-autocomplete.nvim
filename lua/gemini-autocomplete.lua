@@ -9,13 +9,13 @@ local M = {}
 local function gemini_add_file(cmd_args)
   util.notify(vim.inspect(cmd_args.fargs), vim.log.levels.DEBUG)
   if #cmd_args.fargs < 2 then
-    vim.notify('Error: Gemini add_file expected at least 1 filename', vim.log.levels.ERROR)
+    vim.notify('Error: Gemini-autocomplete add_file expected at least 1 filename', vim.log.levels.ERROR)
     return
   end
   for idx = 2, #cmd_args.fargs do
     local file_name = vim.fn.expand(cmd_args.fargs[idx])
     if file_name == '' then
-      vim.notify('Gemini Error: filepath expands to empty string (common mistake: a new file has to be saved once before adding)', vim.log.levels.ERROR)
+      vim.notify('Gemini-autocomplete Error: filepath expands to empty string (common mistake: a new file has to be saved once before adding)', vim.log.levels.ERROR)
       return
     end
     util.notify('file_name is ' .. file_name, vim.log.levels.DEBUG)
@@ -28,13 +28,13 @@ end
 local function gemini_remove_file(cmd_args)
   util.notify(vim.inspect(cmd_args.fargs), vim.log.levels.DEBUG)
   if #cmd_args.fargs < 2 then
-    vim.notify('Error: Gemini add_file expected at least 1 filename', vim.log.levels.ERROR)
+    vim.notify('Error: Gemini-autocomplete add_file expected at least 1 filename', vim.log.levels.ERROR)
     return
   end
   for idx = 2, #cmd_args.fargs do
     local file_name = vim.fn.expand(cmd_args.fargs[idx])
     if file_name == '' then
-      vim.notify('Gemini Error: filepath expands to empty string', vim.log.levels.ERROR)
+      vim.notify('Gemini-autocomplete Error: filepath expands to empty string', vim.log.levels.ERROR)
       return
     end
     file_name = vim.fn.fnamemodify(file_name, ':p')
@@ -47,25 +47,25 @@ end
 
 M.setup = function(opts)
   if not vim.fn.executable('curl') then
-    vim.notify("Gemini: Could not find executable: 'curl'", vim.log.levels.ERROR)
+    vim.notify("Gemini-autocomplete: Could not find executable: 'curl'", vim.log.levels.ERROR)
     return
   end
 
   if not util.is_nvim_version_ge(0, 10, 0) then
-    vim.notify('Gemini: neovim version may be too old', vim.log.levels.WARN)
+    vim.notify('Gemini-autocomplete: neovim version may be too old', vim.log.levels.WARN)
     return
   end
 
   _G.gemini = {}
 
-  vim.api.nvim_create_augroup('Gemini', { clear = true })
+  vim.api.nvim_create_augroup('Gemini-autocomplete', { clear = true })
 
   config.set_config(opts)
   -- M.enabled = config.get_config().completion.enabled
   require('gemini-autocomplete.completion').setup()
 
   vim.api.nvim_create_autocmd('BufWritePost', {
-    group = 'Gemini',
+    group = 'Gemini-autocomplete',
     callback = function(opts)
       local buf = opts.buf
       for watch_file_name, _ in pairs(context.context) do
@@ -76,7 +76,7 @@ M.setup = function(opts)
     end,
   })
 
-  vim.api.nvim_create_user_command('Gemini', function(cmd_args)
+  vim.api.nvim_create_user_command('Gemini-autocomplete', function(cmd_args)
     util.notify(vim.inspect(cmd_args), vim.log.levels.DEBUG)
     if cmd_args.args == 'choose_model' then
       M.choose_model()
@@ -93,14 +93,14 @@ M.setup = function(opts)
     elseif cmd_args.args == 'prompt_code' then
       M.prompt_code()
     else
-      vim.notify("Error: Command ':Gemini " .. cmd_args.args .. "' does not exist", vim.log.levels.ERROR)
+      vim.notify("Error: Command ':Gemini-autocomplete " .. cmd_args.args .. "' does not exist", vim.log.levels.ERROR)
     end
   end, {
     nargs = '+',
     complete = function(arglead, cmdline, cursorpos)
       return { 'choose_model', 'add_file', 'remove_file', 'add_git_files', 'edit_context', 'clear_context', 'prompt_code' }
     end,
-    desc = 'Gemini commands: choose_model, add_file, remove_file, add_git_files, edit_context, clear_context, prompt_code',
+    desc = 'Gemini-autocomplete commands: choose_model, add_file, remove_file, add_git_files, edit_context, clear_context, prompt_code',
   })
 end
 
@@ -180,9 +180,9 @@ end
 M.toggle_enabled = function()
   config.get_config().completion.enabled = not config.get_config().completion.enabled
   if config.get_config().completion.enabled then
-    print('Gemini: Autocomplete enabled')
+    print('Gemini-autocomplete: Autocomplete enabled')
   else
-    print('Gemini: Autocomplete disabled')
+    print('Gemini-autocomplete: Autocomplete disabled')
   end
   vim.api.nvim_command('redraw!')
 end

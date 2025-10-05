@@ -23,7 +23,7 @@ local function handle_result(obj, callback)
   local model_error = vim.tbl_get(model_response, 'error')
   if model_error then
     vim.schedule(function ()
-      vim.notify('ERROR: Gemini reported an error\n' .. vim.inspect(model_error), vim.log.levels.ERROR)
+      vim.notify('ERROR: Gemini-autocomplete reported an error\n' .. vim.inspect(model_error), vim.log.levels.ERROR)
     end)
   end
   model_response = vim.tbl_get(model_response, 'candidates', 1, 'content', 'parts', 1, 'text')
