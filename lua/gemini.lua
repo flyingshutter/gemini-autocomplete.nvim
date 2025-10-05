@@ -74,6 +74,8 @@ M.setup = function(opts)
       M.edit_context()
     elseif cmd_args.args == 'request_code' then
       completion.request_code()
+    else
+      vim.notify("Error: Command ':Gemini " .. cmd_args.args .. "' does not exist", vim.log.levels.ERROR)
     end
   end, {
     nargs = '+',
@@ -84,7 +86,7 @@ M.setup = function(opts)
   })
 end
 
-local function win_config(buf, opts)
+local function win_config(opts)
   opts = opts or {}
   opts = vim.tbl_deep_extend('force', {size = {60,20}, title = 'Unnamed Window'}, opts)
   local width = opts.size[1]
@@ -108,7 +110,7 @@ M.edit_context = function ()
   end
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, file_names)
   local height = math.min(vim.o.lines - 3, math.max(40, vim.api.nvim_buf_line_count(buf)))
-  vim.api.nvim_open_win(buf, true, win_config(buf, {size = {90,height}, title = 'Edit files'}))
+  vim.api.nvim_open_win(buf, true, win_config({size = {90,height}, title = 'Edit files'}))
 
   vim.keymap.set('n', 'q', function()
     vim.api.nvim_win_close(0, false)
@@ -144,7 +146,7 @@ M.choose_model = function()
   local buf = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, available_models)
   local height = math.min(vim.o.lines - 3, vim.api.nvim_buf_line_count(buf))
-  vim.api.nvim_open_win(buf, true, win_config(buf, { size = {40, height}, title = 'Choose Model'}))
+  vim.api.nvim_open_win(buf, true, win_config({ size = {40, height}, title = 'Choose Model'}))
 
   vim.keymap.set('n', 'q', function()
     vim.api.nvim_win_close(0, false)
