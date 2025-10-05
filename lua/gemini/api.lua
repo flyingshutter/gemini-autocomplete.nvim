@@ -22,13 +22,12 @@ local function handle_result(obj, callback)
   local model_response = vim.json.decode(json_text)
   local model_error = vim.tbl_get(model_response, 'error')
   if model_error then
-    error('Gemini reported an error\n' .. vim.inspect(model_error))
+    vim.notify('ERROR: Gemini reported an error\n' .. vim.inspect(model_error), vim.log.levels.ERROR)
   end
   model_response = vim.tbl_get(model_response, 'candidates', 1, 'content', 'parts', 1, 'text')
   if not (model_response and #model_response > 0) then
     return
   end
-  print(vim.inspect(model_response))
   local response_lines = util.split_string(model_response, '\n')
   response_lines = util.delete_strings_starting_with_backticks(response_lines)
   callback(response_lines)
@@ -37,7 +36,7 @@ end
 M.gemini_generate_content = function(user_text, system_text, model_name, generation_config, callback)
   local api_key = os.getenv('GEMINI_API_KEY')
   if not api_key then
-    error('Gemini: GEMINI_API_KEY not set')
+    vim.notify('ERROR: Gemini: GEMINI_API_KEY not in environment variables', vim.log.levels.ERROR)
     return ''
   end
 
