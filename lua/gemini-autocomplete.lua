@@ -76,7 +76,7 @@ M.setup = function(opts)
     end,
   })
 
-  vim.api.nvim_create_user_command('Gemini-autocomplete', function(cmd_args)
+  vim.api.nvim_create_user_command('GeminiAutocomplete', function(cmd_args)
     util.notify(vim.inspect(cmd_args), vim.log.levels.DEBUG)
     if cmd_args.args == 'choose_model' then
       M.choose_model()
@@ -93,14 +93,14 @@ M.setup = function(opts)
     elseif cmd_args.args == 'prompt_code' then
       M.prompt_code()
     else
-      vim.notify("Error: Command ':Gemini-autocomplete " .. cmd_args.args .. "' does not exist", vim.log.levels.ERROR)
+      vim.notify("Error: Command ':GeminiAutocomplete " .. cmd_args.args .. "' does not exist", vim.log.levels.ERROR)
     end
   end, {
     nargs = '+',
     complete = function(arglead, cmdline, cursorpos)
       return { 'choose_model', 'add_file', 'remove_file', 'add_git_files', 'edit_context', 'clear_context', 'prompt_code' }
     end,
-    desc = 'Gemini-autocomplete commands: choose_model, add_file, remove_file, add_git_files, edit_context, clear_context, prompt_code',
+    desc = 'GeminiAutocomplete commands: choose_model, add_file, remove_file, add_git_files, edit_context, clear_context, prompt_code',
   })
 end
 

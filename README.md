@@ -29,13 +29,13 @@ run `nvim` and `:checkhealth gemini-autocomplete`
 
 ## User interface
 ```vim
-- :Gemini-autocomplete prompt_code   "asks the user for a prompt and inserts the generated output under the cursor
-- :Gemini-autocomplete choose_model  "opens a popup window that lets you choose the active gemini model
-- :Gemini-autocomplete edit_context  "opens a popup window that lets you edit the list of files in the code context
-- :Gemini-autocomplete add_file <file1> [<file2> ...]    "add file(s) to code context (% also works)
-- :Gemini-autocomplete remove_file <file1> [<file2> ...] "add file(s) to code context
-- :Gemini-autocomplete clear_context "clears the file context
-- :Gemini-autocomplete add_git_files "if your project is versioned, adds all git handled files to the code context
+- :GeminiAutocomplete prompt_code   "asks the user for a prompt and inserts the generated output under the cursor
+- :GeminiAutocomplete choose_model  "opens a popup window that lets you choose the active gemini model
+- :GeminiAutocomplete edit_context  "opens a popup window that lets you edit the list of files in the code context
+- :GeminiAutocomplete add_file <file1> [<file2> ...]    "add file(s) to code context (% also works)
+- :GeminiAutocomplete remove_file <file1> [<file2> ...] "add file(s) to code context
+- :GeminiAutocomplete clear_context "clears the file context
+- :GeminiAutocomplete add_git_files "if your project is versioned, adds all git handled files to the code context
 ```
 
 ## Example config
