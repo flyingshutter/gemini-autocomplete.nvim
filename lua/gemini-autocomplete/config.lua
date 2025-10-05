@@ -33,7 +33,7 @@ M.config = {
   },
   completion = {
     enabled = true,
-    blacklist_filetypes = { 'help', 'qf', 'json', 'yaml', 'toml', 'xml' },
+    blacklist_filetypes = { 'help', 'qf', 'yaml', 'toml', 'xml' },
     blacklist_filenames = { '.env' },
     completion_delay = 800,
     insert_result_key = '<S-Tab>',

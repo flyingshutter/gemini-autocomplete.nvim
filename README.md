@@ -4,8 +4,8 @@ Codebase aware autocomplete and code prompting using Gemini.
 ## Features 
 - Choose model (gemini-2.5-pro, gemini-2.5-flash, gemini-2.5-flash-lite, gemini-2.0-flash, gemini-2.0-flash-lite)
 - Context aware: Manage known files manually or let git do the job
-- switch completion on and off
-- show model and state in statusline (using mini.statusline)
+- Switch completion on and off
+- Show model and state in statusline (using mini.statusline)
 
 
 ## Installation
@@ -69,7 +69,7 @@ run `nvim` and `:checkhealth gemini-autocomplete`
 
 ```
 
-## Default Setting
+## Default Settings
 ```lua
 opts = {
   model = {
@@ -101,7 +101,7 @@ opts = {
   },
   completion = {
     enabled = true,
-    blacklist_filetypes = { 'help', 'qf', 'json', 'yaml', 'toml', 'xml' },
+    blacklist_filetypes = { 'help', 'qf', 'yaml', 'toml', 'xml' },
     blacklist_filenames = { '.env' },
     completion_delay = 800,
     insert_result_key = '<S-Tab>',
@@ -125,4 +125,5 @@ opts = {
   },
 }
 ```
-
+# Thanks
+This is a heavily altered fork of https://github.com/kiddos/gemini.nvim

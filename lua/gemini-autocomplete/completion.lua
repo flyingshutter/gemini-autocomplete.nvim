@@ -23,6 +23,7 @@ M.setup = function()
       local filetype = vim.api.nvim_get_option_value('filetype', { buf = buf })
       local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ':t')
       if util.is_blacklisted(blacklist_filetypes, filetype) or util.is_blacklisted(blacklist_filenames, filename) then
+        util.notify("Gemini-autocomplete: Did not complete, filetype '" .. filetype .. "' is blaklisted in config", vim.log.levels.WARN)
         return
       end
       M.gemini_complete()
