@@ -1,6 +1,3 @@
--- TODO:
--- general file structure
--- tests
 local config = require('gemini-autocomplete.config')
 local api = require('gemini-autocomplete.api')
 local util = require('gemini-autocomplete.util')
