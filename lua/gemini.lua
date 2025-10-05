@@ -94,17 +94,17 @@ M.setup = function(opts)
       M.edit_context()
     elseif cmd_args.args == 'clear_context' then
       context.clear_context()
-    elseif cmd_args.args == 'request_code' then
-      completion.request_code()
+    elseif cmd_args.args == 'prompt_code' then
+      completion.prompt_code()
     else
       vim.notify("Error: Command ':Gemini " .. cmd_args.args .. "' does not exist", vim.log.levels.ERROR)
     end
   end, {
     nargs = '+',
     complete = function(arglead, cmdline, cursorpos)
-      return { 'choose_model', 'add_file', 'remove_file', 'add_git_files', 'edit_context', 'clear_context', 'request_code' }
+      return { 'choose_model', 'add_file', 'remove_file', 'add_git_files', 'edit_context', 'clear_context', 'prompt_code' }
     end,
-    desc = 'Gemini commands: choose_model, add_file, remove_file, add_git_files, edit_context, clear_context, request_code',
+    desc = 'Gemini commands: choose_model, add_file, remove_file, add_git_files, edit_context, clear_context, prompt_code',
   })
 end
 

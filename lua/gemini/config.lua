@@ -17,7 +17,7 @@ M.config = {
         .. '\n* Your response does not need to contain explaination.'
     end,
   },
-  request_code = {
+  prompt_code = {
     make_prompt = function(buf, pos, user_prompt)
       local context = require('gemini.context')
       return 'Your task is to write code as prompted by the user. Return only the code. I will give you:\n'

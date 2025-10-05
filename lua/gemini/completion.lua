@@ -36,13 +36,13 @@ M.setup = function()
   })
 end
 
-M.request_code = function()
+M.prompt_code = function()
   local buf = vim.api.nvim_get_current_buf()
   local win = vim.api.nvim_get_current_win()
   local pos = vim.api.nvim_win_get_cursor(win)
 
   local user_prompt = vim.fn.input('Prompt please: ')
-  local user_text = config.get_config().request_code.make_prompt(buf, pos, user_prompt)
+  local user_text = config.get_config().prompt_code.make_prompt(buf, pos, user_prompt)
   util.notify(user_text, vim.log.levels.DEBUG)
 
   local system_text = config.get_config().model.get_system_text()
