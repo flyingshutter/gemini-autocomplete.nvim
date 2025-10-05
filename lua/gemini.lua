@@ -92,9 +92,9 @@ M.setup = function(opts)
     elseif cmd_args.args == 'edit_context' then
       M.edit_context()
     elseif cmd_args.args == 'clear_context' then
-      context.clear_context()
+      M.clear_context()
     elseif cmd_args.args == 'prompt_code' then
-      completion.prompt_code()
+      M.prompt_code()
     else
       vim.notify("Error: Command ':Gemini " .. cmd_args.args .. "' does not exist", vim.log.levels.ERROR)
     end
@@ -193,6 +193,10 @@ end
 M.is_enabled = function()
   return config.get_config().completion.enabled
 end
+
+M.prompt_code = completion.prompt_code
+
+M.clear_context = context.clear_context
 
 M.add_gitfiles = function()
   _G.gemini.yes_to_all = false
