@@ -13,14 +13,14 @@ local function gemini_add_file(cmd_args)
     return
   end
   for idx = 2, #cmd_args.fargs do
-    local file_name = vim.fn.fnamemodify(vim.fn.expand(cmd_args.fargs[idx]), ":p")
-    util.notify("file_name is " .. file_name, vim.log.levels.DEBUG)
-    if file_name == "" then
+    local file_name = vim.fn.fnamemodify(vim.fn.expand(cmd_args.fargs[idx]), ':p')
+    util.notify('file_name is ' .. file_name, vim.log.levels.DEBUG)
+    if file_name == '' then
       vim.notify('Gemini Error: Save file before adding to context', vim.log.levels.ERROR)
       return
     end
 
-    util.notify("adding file " .. cmd_args.fargs[idx], vim.log.levels.DEBUG)
+    util.notify('adding file ' .. cmd_args.fargs[idx], vim.log.levels.DEBUG)
     context.add_file(file_name)
   end
   util.notify(cmd_args.fargs[2], vim.log.levels.DEBUG)
@@ -48,7 +48,6 @@ M.setup = function(opts)
   if config.get_config().general.mini_statusline then
     M.mini_statusline()
   end
-
 
   vim.api.nvim_create_autocmd('BufWritePost', {
     group = 'Gemini',
@@ -82,13 +81,13 @@ M.setup = function(opts)
     complete = function(arglead, cmdline, cursorpos)
       return { 'choose_model', 'add_file', 'add_git_files', 'edit_context', 'request_code' }
     end,
-    desc = 'Gemini commands: choose_model, add_file, add_gitfiles, edit_context, request_code'
+    desc = 'Gemini commands: choose_model, add_file, add_gitfiles, edit_context, request_code',
   })
 end
 
 local function win_config(opts)
   opts = opts or {}
-  opts = vim.tbl_deep_extend('force', {size = {60,20}, title = 'Unnamed Window'}, opts)
+  opts = vim.tbl_deep_extend('force', { size = { 60, 20 }, title = 'Unnamed Window' }, opts)
   local width = opts.size[1]
   local height = opts.size[2]
   return {
@@ -102,7 +101,7 @@ local function win_config(opts)
   }
 end
 
-M.edit_context = function ()
+M.edit_context = function()
   local buf = vim.api.nvim_create_buf(false, true)
   local file_names = {}
   for file_name, _ in pairs(context.context) do
@@ -110,7 +109,7 @@ M.edit_context = function ()
   end
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, file_names)
   local height = math.min(vim.o.lines - 3, math.max(40, vim.api.nvim_buf_line_count(buf)))
-  vim.api.nvim_open_win(buf, true, win_config({size = {90,height}, title = 'Edit files'}))
+  vim.api.nvim_open_win(buf, true, win_config({ size = { 90, height }, title = 'Edit files' }))
 
   vim.keymap.set('n', 'q', function()
     vim.api.nvim_win_close(0, false)
@@ -126,7 +125,7 @@ M.edit_context = function ()
     local added, removed = util.get_list_differences(file_names, new_file_names)
 
     for _, file_name in ipairs(added) do
-       context.add_file(file_name)
+      context.add_file(file_name)
     end
 
     for _, file_name in ipairs(removed) do
@@ -146,7 +145,7 @@ M.choose_model = function()
   local buf = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, available_models)
   local height = math.min(vim.o.lines - 3, vim.api.nvim_buf_line_count(buf))
-  vim.api.nvim_open_win(buf, true, win_config({ size = {40, height}, title = 'Choose Model'}))
+  vim.api.nvim_open_win(buf, true, win_config({ size = { 40, height }, title = 'Choose Model' }))
 
   vim.keymap.set('n', 'q', function()
     vim.api.nvim_win_close(0, false)
@@ -199,7 +198,7 @@ M.toggle_enabled = function()
   else
     print('Gemini: Autocomplete disabled')
   end
-  vim.api.nvim_command 'redraw!'
+  vim.api.nvim_command('redraw!')
 end
 
 M.is_enabled = function()
@@ -208,12 +207,12 @@ end
 
 M.add_gitfiles = function()
   _G.gemini.yes_to_all = false
-  local branch = vim.fn.system("git branch --show-current"):gsub("\n", "")
-  local res = vim.fn.system("git ls-tree -r " .. branch .. " --name-only")
+  local branch = vim.fn.system('git branch --show-current'):gsub('\n', '')
+  local res = vim.fn.system('git ls-tree -r ' .. branch .. ' --name-only')
   local git_filenames = util.split_string(res, '\n')
   util.notify(vim.inspect(git_filenames), vim.log.levels.DEBUG)
   for _, file_name in ipairs(git_filenames) do
-    file_name = vim.fn.fnamemodify(file_name, ":p")
+    file_name = vim.fn.fnamemodify(file_name, ':p')
     context.add_file(file_name)
   end
   _G.gemini.yes_to_all = false

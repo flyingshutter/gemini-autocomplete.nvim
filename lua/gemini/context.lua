@@ -15,11 +15,11 @@ M.add_file = function(file_name, opts)
     util.notify(string.format("Gemini: File not found: '%s'", file_name), vim.log.levels.ERROR)
     return
   end
-  if file_size > math.pow(2,20) then
+  if file_size > math.pow(2, 20) then
     local decision = nil
     if not _G.gemini.yes_to_all then
-      decision = vim.fn.input("\nFile " .. file_name .. "\n is bigger than 1MiB, really load it? [y]es, [n]o, [a]ll:  ")
-      print("\n")
+      decision = vim.fn.input('\nFile ' .. file_name .. '\n is bigger than 1MiB, really load it? [y]es, [n]o, [a]ll:  ')
+      print('\n')
       if decision == 'a' or decision == 'A' then
         _G.gemini.yes_to_all = true
       end
@@ -34,16 +34,16 @@ M.add_file = function(file_name, opts)
     return
   end
   -- add file to context
-  local lines_table =  vim.fn.readfile(file_name)
+  local lines_table = vim.fn.readfile(file_name)
   M.context[file_name] = lines_table
   vim.notify("Gemini: Adding file: '" .. file_name .. "'", vim.log.levels.INFO)
 end
 
 M.make_context_string = function(active_buf)
-  local context_string = ""
+  local context_string = ''
   for file_name, line_list in pairs(M.context) do
     local file_content = table.concat(line_list, '\n')
-    local file_context_string = "Filename: " .. file_name .. "\n" .. file_content .. "\n"
+    local file_context_string = 'Filename: ' .. file_name .. '\n' .. file_content .. '\n'
     context_string = context_string .. file_context_string
   end
   return context_string
@@ -68,5 +68,3 @@ M.make_current_file_string = function(buf, pos)
 end
 
 return M
-
-

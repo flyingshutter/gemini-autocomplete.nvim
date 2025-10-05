@@ -54,7 +54,7 @@ M.split_string = function(inputstr, sep)
     sep = '%s'
   end
   local t = {}
-  for str in string.gmatch(inputstr, '([^'..sep..']+)') do
+  for str in string.gmatch(inputstr, '([^' .. sep .. ']+)') do
     table.insert(t, str)
   end
   return t
@@ -65,7 +65,7 @@ M.is_text_file = function(filepath)
     return false -- File does not exist or is not readable
   end
 
-  local f = io.open(filepath, "rb")
+  local f = io.open(filepath, 'rb')
   if not f then
     return false -- Could not open file (e.g., permissions)
   end
@@ -79,10 +79,10 @@ M.is_text_file = function(filepath)
 
   -- 4. Check for the presence of a null byte ('\0')
   -- Binary files almost always contain null bytes. Text files generally do not.
-  return not content:find("\0", 1, true)
+  return not content:find('\0', 1, true)
 end
 
-M.get_list_differences = function (old_list, new_list)
+M.get_list_differences = function(old_list, new_list)
   local added = {}
   local removed = {}
 
@@ -115,18 +115,18 @@ M.get_list_differences = function (old_list, new_list)
 end
 
 M.delete_strings_starting_with_backticks = function(string_list)
-    local cleaned_list = {}
-    local pattern = "^`" -- Regex: starts with a backtick
+  local cleaned_list = {}
+  local pattern = '^`' -- Regex: starts with a backtick
 
-    for _, str in ipairs(string_list) do
-        -- If string.match returns nil, it means the pattern was not found,
-        -- so the string does NOT start with a backtick.
-        if not string.match(str, pattern) then
-            table.insert(cleaned_list, str)
-        end
+  for _, str in ipairs(string_list) do
+    -- If string.match returns nil, it means the pattern was not found,
+    -- so the string does NOT start with a backtick.
+    if not string.match(str, pattern) then
+      table.insert(cleaned_list, str)
     end
+  end
 
-    return cleaned_list
- end
+  return cleaned_list
+end
 
 return M

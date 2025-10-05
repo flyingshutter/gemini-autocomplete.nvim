@@ -36,12 +36,12 @@ M.setup = function()
   })
 end
 
-M.request_code = function ()
+M.request_code = function()
   local buf = vim.api.nvim_get_current_buf()
   local win = vim.api.nvim_get_current_win()
   local pos = vim.api.nvim_win_get_cursor(win)
 
-  local user_prompt = vim.fn.input("Prompt please: ")
+  local user_prompt = vim.fn.input('Prompt please: ')
   local user_text = config.get_config().request_code.make_prompt(buf, pos, user_prompt)
   util.notify(user_text, vim.log.levels.DEBUG)
 
@@ -53,10 +53,10 @@ M.request_code = function ()
     vim.schedule(function()
       local current_pos = vim.api.nvim_win_get_cursor(win)
       if current_pos[1] ~= pos[1] or current_pos[2] ~= pos[2] then
-        util.notify("Cursor moved since request. Did not insert result", vim.log.levels.WARN)
+        util.notify('Cursor moved since request. Did not insert result', vim.log.levels.WARN)
         return
       end
-      util.notify("Done. Result inserted below cursor.", vim.log.levels.INFO)
+      util.notify('Done. Result inserted below cursor.', vim.log.levels.INFO)
       vim.api.nvim_buf_set_lines(buf, pos[1], pos[1], false, response_lines)
     end)
   end)
@@ -82,14 +82,13 @@ M._gemini_complete = function()
   end)
 end
 
-local can_complete = config.get_config().completion.can_complete
-or function()
+local can_complete = config.get_config().completion.can_complete or function()
   return vim.fn.pumvisible() ~= 1
 end
 
 M.gemini_complete = util.debounce(function()
   -- if not require('gemini').enabled then
-  if not require'gemini.config'.config.completion.enabled then
+  if not require('gemini.config').config.completion.enabled then
     return
   end
 

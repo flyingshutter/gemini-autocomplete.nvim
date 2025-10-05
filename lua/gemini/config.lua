@@ -5,7 +5,7 @@ local M = {}
 
 M.config = {
   general = {
-    mini_statusline = nil
+    mini_statusline = nil,
   },
   model = {
     model_id = api.MODELS.GEMINI_2_5_FLASH_LITE,
@@ -15,15 +15,19 @@ M.config = {
   },
   request_code = {
     make_prompt = function(buf, pos, user_prompt)
-      local context = require'gemini.context'
+      local context = require('gemini.context')
       return 'Your task is to write code as prompted by the user. Return only the code. I will give you:\n'
-          .. '1) some important files as context\n'
-          .. '2) the file we are currently editing, where the cursor position is marked by <cursor></cursor>\n'
-          .. '3) the user prompt.\n\n'
-          .. '1)\n' .. context.make_context_string() .. '\n\n'
-          .. '2)\n' .. context.make_current_file_string(buf, pos) .. '\n\n'
-          .. '3)\n' .. user_prompt
-
+        .. '1) some important files as context\n'
+        .. '2) the file we are currently editing, where the cursor position is marked by <cursor></cursor>\n'
+        .. '3) the user prompt.\n\n'
+        .. '1)\n'
+        .. context.make_context_string()
+        .. '\n\n'
+        .. '2)\n'
+        .. context.make_current_file_string(buf, pos)
+        .. '\n\n'
+        .. '3)\n'
+        .. user_prompt
     end,
   },
   completion = {
@@ -40,13 +44,17 @@ M.config = {
         .. '\n* Your response does not need to contain explaination.'
     end,
     make_prompt = function(buf, pos)
-      local context = require'gemini.context'
+      local context = require('gemini.context')
       return 'Your task is to write code. Return only the code. I will give you:\n'
-                  .. '1) some important files as context\n'
-                  .. '2) the file we are currently editing, where the cursor position is marked by <cursor></cursor>\n'
-                  .. 'Return the most likely completion at the cursor\n\n'
-                  .. '1)\n' .. context.make_context_string() .. '\n\n'
-                  .. '2)\n' .. context.make_current_file_string(buf, pos) .. '\n\n'
+        .. '1) some important files as context\n'
+        .. '2) the file we are currently editing, where the cursor position is marked by <cursor></cursor>\n'
+        .. 'Return the most likely completion at the cursor\n\n'
+        .. '1)\n'
+        .. context.make_context_string()
+        .. '\n\n'
+        .. '2)\n'
+        .. context.make_current_file_string(buf, pos)
+        .. '\n\n'
     end,
   },
 }
