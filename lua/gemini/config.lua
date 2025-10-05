@@ -5,7 +5,7 @@ local M = {}
 
 M.config = {
   general = {
-    mini_statusline = false,
+    make_statusline = false,
   },
   model = {
     model_id = api.MODELS.GEMINI_2_5_FLASH_LITE,
