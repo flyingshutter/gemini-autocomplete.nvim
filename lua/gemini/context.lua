@@ -48,6 +48,11 @@ M.remove_file = function(file_name)
   M.context[file_name] = nil
 end
 
+M.clear_context = function()
+  M.context = {}
+  vim.notify('Gemini: Cleared context')
+end
+
 M.make_context_string = function(active_buf)
   local context_string = ''
   for file_name, line_list in pairs(M.context) do

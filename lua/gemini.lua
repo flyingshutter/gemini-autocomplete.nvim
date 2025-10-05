@@ -92,6 +92,8 @@ M.setup = function(opts)
       M.add_gitfiles()
     elseif cmd_args.args == 'edit_context' then
       M.edit_context()
+    elseif cmd_args.args == 'clear_context' then
+      context.clear_context()
     elseif cmd_args.args == 'request_code' then
       completion.request_code()
     else
@@ -100,9 +102,9 @@ M.setup = function(opts)
   end, {
     nargs = '+',
     complete = function(arglead, cmdline, cursorpos)
-      return { 'choose_model', 'add_file', 'remove_file', 'add_git_files', 'edit_context', 'request_code' }
+      return { 'choose_model', 'add_file', 'remove_file', 'add_git_files', 'edit_context', 'clear_context', 'request_code' }
     end,
-    desc = 'Gemini commands: choose_model, add_file, remove_file, add_git_files, edit_context, request_code',
+    desc = 'Gemini commands: choose_model, add_file, remove_file, add_git_files, edit_context, clear_context, request_code',
   })
 end
 
