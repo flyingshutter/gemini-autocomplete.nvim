@@ -25,6 +25,8 @@ export GEMINI_API_KEY="<your API key here>"
 ```lua
 use { 'flyingshutter/gemini-autocomplete.nvim', opts = {} }
 ```
+run `nvim` and `:checkhealth gemini-autocomplete`
+
 ## User interface
 ```vim
 - :Gemini prompt_code   "asks the user for a prompt and inserts the generated output under the cursor
@@ -37,7 +39,7 @@ use { 'flyingshutter/gemini-autocomplete.nvim', opts = {} }
 ```
 
 ## Example config
-* Show model and status info in mini.statusline from [mini.nvim](https://github.com/nvim-mini/mini.nvim)
+* Show model and status info in mini.statusline (Install separately from [mini.nvim](https://github.com/nvim-mini/mini.nvim))
 * Define some keymaps
 * Disable autocompletion on start
 ```lua
