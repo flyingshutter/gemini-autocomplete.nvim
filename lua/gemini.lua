@@ -64,7 +64,7 @@ M.setup = function(opts)
 
   vim.api.nvim_create_user_command('Gemini', function(cmd_args)
     util.notify(vim.inspect(cmd_args), vim.log.levels.DEBUG)
-    if cmd_args.args == 'model' then
+    if cmd_args.args == 'choose_model' then
       M.choose_model()
     elseif cmd_args.fargs[1] == 'add_file' then
       gemini_add_file(cmd_args)
@@ -78,9 +78,9 @@ M.setup = function(opts)
   end, {
     nargs = '+',
     complete = function(arglead, cmdline, cursorpos)
-      return { 'model', 'add_file', 'add_git_files', 'edit_context', 'request_code' }
+      return { 'choose_model', 'add_file', 'add_git_files', 'edit_context', 'request_code' }
     end,
-    desc = 'Gemini commands: set_model, add_file, add_gitfiles, edit_context, request_code'
+    desc = 'Gemini commands: choose_model, add_file, add_gitfiles, edit_context, request_code'
   })
 end
 
