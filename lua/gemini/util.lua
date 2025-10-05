@@ -114,4 +114,19 @@ M.get_list_differences = function (old_list, new_list)
   return added, removed
 end
 
+M.delete_strings_starting_with_backticks = function(string_list)
+    local cleaned_list = {}
+    local pattern = "^`" -- Regex: starts with a backtick
+
+    for _, str in ipairs(string_list) do
+        -- If string.match returns nil, it means the pattern was not found,
+        -- so the string does NOT start with a backtick.
+        if not string.match(str, pattern) then
+            table.insert(cleaned_list, str)
+        end
+    end
+
+    return cleaned_list
+ end
+
 return M

@@ -29,7 +29,9 @@ local function handle_result(obj, callback)
     return
   end
   print(vim.inspect(model_response))
-  callback(model_response)
+  local response_lines = util.split_string(model_response, '\n')
+  response_lines = util.delete_strings_starting_with_backticks(response_lines)
+  callback(response_lines)
 end
 
 M.gemini_generate_content = function(user_text, system_text, model_name, generation_config, callback)

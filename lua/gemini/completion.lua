@@ -36,42 +36,20 @@ M.setup = function()
   })
 end
 
-local get_prompt_text = function(bufnr, pos)
-  local get_prompt = config.get_config().completion.get_prompt
-  if not get_prompt then
-    vim.notify('prompt function is not found', vim.log.levels.WARN)
-    return nil
-  end
-  return get_prompt(bufnr, pos)
-end
-
 M.request_code = function ()
-  local active_buf = vim.api.nvim_get_current_buf()
+  local buf = vim.api.nvim_get_current_buf()
   local win = vim.api.nvim_get_current_win()
   local pos = vim.api.nvim_win_get_cursor(win)
-  local context_string = context.make_context_string(active_buf)
-  local generation_config = config.get_gemini_generation_config()
-  local model_id = config.get_config().model.model_id
-
-  local system_text = nil
-  local get_system_text = config.get_config().completion.get_system_text
-  if get_system_text then
-    system_text = get_system_text()
-  end
 
   local user_prompt = vim.fn.input("Prompt please: ")
-
-  local user_text = 'Your task is to write code as prompted by the user. Do not format the code in any way, just give plain text output. I will give you:\n'
-    .. '1) some important files as context\n2) the file we are currently editing, where the cursor position is marked by <cursor></cursor>\n'
-    .. '3) the user prompt.\n\n1)\n'
-    .. context_string .. "\n\n2)\n" .. context.make_current_file_string(active_buf, pos) .. '\n\n3)\n'
-    .. user_prompt
-
+  local user_text = config.get_config().request_code.make_prompt(buf, pos, user_prompt)
   util.notify(user_text, vim.log.levels.DEBUG)
 
-  api.gemini_generate_content(user_text, system_text, model_id, generation_config, function(model_response)
-    local response_lines = util.split_string(model_response, '\n')
+  local system_text = config.get_config().completion.get_system_text()
+  local model_id = config.get_config().model.model_id
+  local generation_config = config.get_gemini_generation_config()
 
+  api.gemini_generate_content(user_text, system_text, model_id, generation_config, function(response_lines)
     vim.schedule(function()
       local current_pos = vim.api.nvim_win_get_cursor(win)
       if current_pos[1] ~= pos[1] or current_pos[2] ~= pos[2] then
@@ -79,31 +57,26 @@ M.request_code = function ()
         return
       end
       util.notify("Done. Result inserted below cursor.", vim.log.levels.INFO)
-      vim.api.nvim_buf_set_lines(active_buf, pos[1], pos[1], false, response_lines)
+      vim.api.nvim_buf_set_lines(buf, pos[1], pos[1], false, response_lines)
     end)
   end)
 end
 
 M._gemini_complete = function()
-  local bufnr = vim.api.nvim_get_current_buf()
+  local buf = vim.api.nvim_get_current_buf()
   local win = vim.api.nvim_get_current_win()
   local pos = vim.api.nvim_win_get_cursor(win)
-  local user_text = get_prompt_text(bufnr, pos)
+
+  local user_text = config.get_config().completion.make_prompt(buf, pos)
   util.notify(user_text, vim.log.levels.DEBUG)
-  if not user_text then
-    return
-  end
 
-  local system_text = nil
-  local get_system_text = config.get_config().completion.get_system_text
-  if get_system_text then
-    system_text = get_system_text()
-  end
-
-  local generation_config = config.get_gemini_generation_config()
+  local system_text = config.get_config().completion.get_system_text()
   local model_id = config.get_config().model.model_id
-  api.gemini_generate_content(user_text, system_text, model_id, generation_config, function(model_response)
+  local generation_config = config.get_gemini_generation_config()
+
+  api.gemini_generate_content(user_text, system_text, model_id, generation_config, function(response_lines)
     vim.schedule(function()
+      local model_response = vim.fn.join(response_lines, '\n')
       M.show_completion_result(model_response, win, pos)
     end)
   end)

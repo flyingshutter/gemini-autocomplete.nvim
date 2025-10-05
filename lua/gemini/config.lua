@@ -13,6 +13,19 @@ M.config = {
     -- top_k = 128,
     response_mime_type = 'text/plain',
   },
+  request_code = {
+    make_prompt = function(buf, pos, user_prompt)
+      local context = require'gemini.context'
+      return 'Your task is to write code as prompted by the user. Return only the code. I will give you:\n'
+          .. '1) some important files as context\n'
+          .. '2) the file we are currently editing, where the cursor position is marked by <cursor></cursor>\n'
+          .. '3) the user prompt.\n\n'
+          .. '1)\n' .. context.make_context_string() .. '\n\n'
+          .. '2)\n' .. context.make_current_file_string(buf, pos) .. '\n\n'
+          .. '3)\n' .. user_prompt
+
+    end,
+  },
   completion = {
     enabled = true,
     blacklist_filetypes = { 'help', 'qf', 'json', 'yaml', 'toml', 'xml' },
@@ -26,9 +39,9 @@ M.config = {
         .. '\n* Your task is to provide code suggestion at the cursor location marked by <cursor></cursor>.'
         .. '\n* Your response does not need to contain explaination.'
     end,
-    get_prompt = function(buf, pos)
+    make_prompt = function(buf, pos)
       local context = require'gemini.context'
-      return 'Your task is to write code. Do not format the code in any way, just give plain text output. I will give you:\n'
+      return 'Your task is to write code. Return only the code. I will give you:\n'
                   .. '1) some important files as context\n'
                   .. '2) the file we are currently editing, where the cursor position is marked by <cursor></cursor>\n'
                   .. 'Return the most likely completion at the cursor\n\n'
