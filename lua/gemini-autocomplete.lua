@@ -119,7 +119,7 @@ local function win_config(opts)
     col = math.floor((vim.o.columns - width) / 2),
     row = math.floor((vim.o.lines - height) / 2),
     border = 'rounded',
-    title = opts.title .. '(q: abort, <Enter>: confirm)',
+    title = opts.title .. ' (<Esc>: abort, <Enter>: confirm)',
   }
 end
 
@@ -133,7 +133,7 @@ M.edit_context = function()
   local height = math.min(vim.o.lines - 3, math.max(40, vim.api.nvim_buf_line_count(buf)))
   vim.api.nvim_open_win(buf, true, win_config({ size = { 90, height }, title = 'Edit files' }))
 
-  vim.keymap.set('n', 'q', function()
+  vim.keymap.set('n', '<Esc>', function()
     vim.api.nvim_win_close(0, false)
   end, { buffer = buf, desc = 'Abort' })
 
@@ -167,9 +167,9 @@ M.choose_model = function()
   local buf = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, available_models)
   local height = math.min(vim.o.lines - 3, vim.api.nvim_buf_line_count(buf))
-  vim.api.nvim_open_win(buf, true, win_config({ size = { 40, height }, title = 'Choose Model' }))
+  vim.api.nvim_open_win(buf, true, win_config({ size = { 46, height }, title = 'Choose Model' }))
 
-  vim.keymap.set('n', 'q', function()
+  vim.keymap.set('n', '<Esc>', function()
     vim.api.nvim_win_close(0, false)
   end, { buffer = buf, desc = 'Abort' })
 
