@@ -46,7 +46,7 @@ M.setup = function(opts)
   require('gemini.completion').setup()
 
   if config.get_config().general.mini_statusline then
-    M.mini_statusline()
+    M.make_mini_statusline()
   end
 
   vim.api.nvim_create_autocmd('BufWritePost', {
@@ -158,7 +158,7 @@ M.choose_model = function()
   end, { buffer = buf, desc = 'Confirm' })
 end
 
-M.mini_statusline = function()
+M.make_mini_statusline = function()
   require('mini.statusline').config.content.active = function()
     local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 120 })
     local git = MiniStatusline.section_git({ trunc_width = 40 })
