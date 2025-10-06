@@ -127,7 +127,7 @@ M.edit_context = function()
     table.insert(file_names, file_name)
   end
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, file_names)
-  local height = math.min(vim.o.lines - 3, math.max(40, vim.api.nvim_buf_line_count(buf)))
+  local height = math.min(vim.o.lines - 9, math.max(40, vim.api.nvim_buf_line_count(buf)))
   vim.api.nvim_open_win(buf, true, win_config({ size = { 90, height }, title = 'Edit Context' }))
 
   vim.keymap.set('n', '<Esc>', function()
