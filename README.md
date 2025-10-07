@@ -127,6 +127,12 @@ opts = {
         .. '\n\n'
     end,
   },
+  external = {
+    mini_statusline = {
+      hl_disabled = 'GeminiDisabled',
+      hl_enabled = 'Geminiabled',
+    }
+  }
 }
 ```
 # Thanks
