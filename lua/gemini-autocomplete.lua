@@ -47,25 +47,38 @@ local function gemini_remove_file(cmd_args)
   util.notify(cmd_args.fargs[2], vim.log.levels.DEBUG)
 end
 
+local function define_colorscheme()
+  vim.api.nvim_set_hl(0, 'GeminiEnabled', { fg = '#5f9a53', italic = false, bold = true })
+  vim.api.nvim_set_hl(0, 'GeminiDisabled', { fg = '#988c5d', italic = false, bold = false })
+end
+
 M.setup = function(opts)
+  opts = opts or {}
+
   if not vim.fn.executable('curl') then
     vim.notify("Gemini-autocomplete: Could not find executable: 'curl'", vim.log.levels.ERROR)
     return
   end
-
   if not util.is_nvim_version_ge(0, 10, 0) then
     vim.notify('Gemini-autocomplete: neovim version may be too old', vim.log.levels.WARN)
     return
   end
 
-  _G.gemini = {}
-
-  vim.api.nvim_create_augroup('Gemini-autocomplete', { clear = true })
-
+  -- general setup
   config.set_config(opts)
-  -- M.enabled = config.get_config().completion.enabled
+  _G.gemini = {}
+  vim.api.nvim_create_augroup('Gemini-autocomplete', { clear = true })
   require('gemini-autocomplete.completion').setup()
 
+  -- make Colorscheme
+  vim.api.nvim_create_augroup("Gemini-colorscheme", { clear = true })
+  vim.api.nvim_create_autocmd("ColorScheme", {
+    group = "Gemini-colorscheme",
+    callback = define_colorscheme,
+  })
+  define_colorscheme()
+
+  --- update context on file save
   vim.api.nvim_create_autocmd('BufWritePost', {
     group = 'Gemini-autocomplete',
     callback = function(opts)
@@ -78,6 +91,7 @@ M.setup = function(opts)
     end,
   })
 
+  -- create Vim Command
   vim.api.nvim_create_user_command('GeminiAutocomplete', function(cmd_args)
     util.notify(vim.inspect(cmd_args), vim.log.levels.DEBUG)
     if cmd_args.args == 'choose_model' then

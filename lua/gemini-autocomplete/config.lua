@@ -57,8 +57,8 @@ M.config = {
   },
   external = {
     mini_statusline = {
-      hl_disabled = 'DiagnosticError',
-      hl_enabled = 'DiagnosticOk',
+      hl_disabled = 'GeminiDisabled',
+      hl_enabled = 'GeminiEnabled',
     }
   }
 }
