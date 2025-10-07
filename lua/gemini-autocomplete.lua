@@ -14,12 +14,14 @@ local function gemini_add_file(cmd_args)
   end
   for idx = 2, #cmd_args.fargs do
     local file_name = vim.fn.expand(cmd_args.fargs[idx])
-    if file_name == '' then
+    if file_name == '' and cmd_args.fargs[idx] == '%' then
       vim.notify('Gemini-autocomplete Error: filepath expands to empty string (common mistake: a new file has to be saved once before adding)', vim.log.levels.ERROR)
       return
+    elseif file_name == '' then
+      vim.notify('Gemini-autocomplete Error: filepath expands to empty string', vim.log.levels.ERROR)
+      return
     end
-    util.notify('file_name is ' .. file_name, vim.log.levels.DEBUG)
-
+    util.notify('Gemini-autocomplete: file_name is ' .. file_name, vim.log.levels.DEBUG)
     context.add_file(file_name)
   end
   util.notify(cmd_args.fargs[2], vim.log.levels.DEBUG)
@@ -144,7 +146,9 @@ M.edit_context = function()
     local added, removed = util.get_list_differences(file_names, new_file_names)
 
     for _, file_name in ipairs(added) do
-      context.add_file(file_name)
+      if file_name ~= '' then
+        context.add_file(file_name)
+      end
     end
 
     for _, file_name in ipairs(removed) do
