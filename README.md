@@ -1,12 +1,12 @@
 # gemini-autocomplete.nvim
 Codebase aware autocomplete and code prompting using Gemini.  
 
-https://github.com/user-attachments/assets/6dde2004-aaf8-4987-814f-53aca623eada
+https://github.com/user-attachments/assets/2ff7616e-8895-4b8b-93af-6c64937cd3aa
 
 ## Features 
 - Autocomplete (std key: Shift+Tab)
 - Prompt for code insertion
-- Context aware: Manage known files manually or let git do the job
+- Context aware: Manage known files manually or let git do the job (if manual, try stuff like `:r !ls *.py` or `:r !find . -name *.lua` in the context editor)
 - Quickly switch completion on and off
 - Show model and state in statusline (using mini.statusline)
 - supports gemini-2.5-pro, gemini-2.5-flash, gemini-2.5-flash-lite, gemini-2.0-flash, gemini-2.0-flash-lite
@@ -131,6 +131,9 @@ opts = {
 ```
 # Thanks
 This is a heavily altered fork of https://github.com/kiddos/gemini.nvim
+
+
+
 
 
 
