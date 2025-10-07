@@ -43,6 +43,9 @@ M.prompt_code = function()
   local pos = vim.api.nvim_win_get_cursor(win)
 
   local user_prompt = vim.fn.input('Prompt please: ')
+  if not user_prompt or user_prompt == '' then
+    return
+  end
   local user_text = config.get_config().prompt_code.make_prompt(buf, pos, user_prompt)
   util.notify(user_text, vim.log.levels.DEBUG)
 
