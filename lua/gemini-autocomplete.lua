@@ -164,6 +164,7 @@ M.choose_model = function()
   for _, model_name in pairs(api.MODELS) do
     table.insert(available_models, model_name)
   end
+  vim.fn.sort(available_models)
 
   local buf = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, available_models)
