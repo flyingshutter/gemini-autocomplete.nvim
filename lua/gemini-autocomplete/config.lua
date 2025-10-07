@@ -55,6 +55,12 @@ M.config = {
         .. '\n\n'
     end,
   },
+  external = {
+    mini_statusline = {
+      hl_disabled = 'DiagnosticError',
+      hl_enabled = 'DiagnosticOk',
+    }
+  }
 }
 
 M.set_config = function(opts)

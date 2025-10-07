@@ -1,3 +1,5 @@
+local config = require('gemini-autocomplete.config')
+
 local M = {}
 
 M.make_mini_statusline = function()
@@ -15,9 +17,11 @@ M.make_mini_statusline = function()
     local gemini_model = require('gemini-autocomplete.config').get_config().model.model_id
     local pos = string.find(gemini_model, '-')
     local gemini_model_short = string.sub(gemini_model, pos + 1)
-    local hl_gemini = 'PmenuMatchSel'
-    if not require('gemini-autocomplete').is_enabled() then
-      hl_gemini = 'DiffDelete'
+
+    local colors = config.get_config().external.mini_statusline
+    local hl_gemini = colors.hl_disabled
+    if require('gemini-autocomplete').is_enabled() then
+      hl_gemini = colors.hl_enabled
     end
 
     return MiniStatusline.combine_groups({
