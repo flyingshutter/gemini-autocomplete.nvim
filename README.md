@@ -4,10 +4,12 @@ Codebase aware autocomplete and code prompting using Gemini.
 https://github.com/user-attachments/assets/6dde2004-aaf8-4987-814f-53aca623eada
 
 ## Features 
-- Choose model (gemini-2.5-pro, gemini-2.5-flash, gemini-2.5-flash-lite, gemini-2.0-flash, gemini-2.0-flash-lite)
+- Autocomplete (std key: Shift+Tab)
+- Prompt for code insertion
 - Context aware: Manage known files manually or let git do the job
-- Switch completion on and off
+- Quickly switch completion on and off
 - Show model and state in statusline (using mini.statusline)
+- supports gemini-2.5-pro, gemini-2.5-flash, gemini-2.5-flash-lite, gemini-2.0-flash, gemini-2.0-flash-lite
 
 
 ## Installation
