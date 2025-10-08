@@ -1,11 +1,9 @@
-local api = require('gemini-autocomplete.api')
-local util = require('gemini-autocomplete.util')
-
 local M = {}
 
 M.config = {
   model = {
-    model_id = api.MODELS.GEMINI_2_5_FLASH_LITE,
+    api = require('gemini-autocomplete.api'),
+    model_id = require('gemini-autocomplete.api').MODELS.GEMINI_2_5_FLASH_LITE,
     temperature = 1,
     response_mime_type = 'text/plain',
     get_system_text = function()
@@ -69,13 +67,6 @@ end
 
 M.get_config = function()
   return M.config
-end
-
-M.get_gemini_generation_config = function()
-  return {
-    temperature = M.get_config().model.temperature,
-    response_mime_type = M.get_config().model.response_mime_type,
-  }
 end
 
 return M

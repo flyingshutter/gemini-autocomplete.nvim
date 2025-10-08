@@ -14,7 +14,7 @@ M.make_mini_statusline = function()
     local location = MiniStatusline.section_location({ trunc_width = 75 })
     local search = MiniStatusline.section_searchcount({ trunc_width = 75 })
 
-    local gemini_model = require('gemini-autocomplete.config').get_config().model.model_id
+    local gemini_model = config.get_config().model.model_id
     local pos = string.find(gemini_model, '-')
     local gemini_model_short = string.sub(gemini_model, pos + 1)
 

@@ -14,73 +14,31 @@ M.MODELS = {
   GEMINI_2_0_FLASH_LITE = 'gemini-2.0-flash-lite',
 }
 
-local function handle_result(obj, callback)
-  local json_text = obj.stdout
-  if not (json_text and #json_text > 0) then
-    return
-  end
-  local model_response = vim.json.decode(json_text)
-  local model_error = vim.tbl_get(model_response, 'error')
-  if model_error then
-    vim.schedule(function ()
-      vim.notify('ERROR: Gemini-autocomplete reported an error\n' .. vim.inspect(model_error), vim.log.levels.ERROR)
-    end)
-  end
-  model_response = vim.tbl_get(model_response, 'candidates', 1, 'content', 'parts', 1, 'text')
-  if not (model_response and #model_response > 0) then
-    return
-  end
-  local response_lines = util.split_string(model_response, '\n')
-  response_lines = util.delete_strings_starting_with_backticks(response_lines)
-  callback(response_lines)
+-- M.model_config = {
+--   model_id = M.MODELS.GEMINI_2_5_FLASH_LITE,
+--   temperature = 1,
+--   response_mime_type = 'text/plain',
+--   get_system_text = function()
+--     return "You are a coding AI assistant that autocomplete user's code."
+--       .. '\n* Your task is to provide code suggestion at the cursor location marked by <cursor></cursor>.'
+--       .. '\n* Your response does not need to contain explaination.'
+--   end,
+-- }
+--
+-- M.setup = function(opts)
+--   opts = opts or {}
+--   M.model_config = vim.tbl_deep_extend('force', M.model_config, opts)
+-- end
+--
+local function get_gemini_generation_config()
+  local config = require('gemini-autocomplete.config')
+  return {
+    temperature = config.get_config().model.temperature,
+    response_mime_type = config.get_config().model.response_mime_type,
+  }
 end
 
-M.gemini_generate_content = function(user_text, system_text, model_name, generation_config, callback)
-  local api_key = os.getenv('GEMINI_API_KEY')
-  if not api_key then
-    vim.notify('ERROR: Gemini: GEMINI_API_KEY not in environment variables', vim.log.levels.ERROR)
-    return ''
-  end
-
-  local api = API .. model_name .. ':generateContent?key=' .. api_key
-  local contents = {
-    {
-      role = 'user',
-      parts = {
-        {
-          text = user_text,
-        },
-      },
-    },
-  }
-  local data = {
-    contents = contents,
-    generationConfig = generation_config,
-  }
-  if system_text then
-    data.systemInstruction = {
-      role = 'user',
-      parts = {
-        {
-          text = system_text,
-        },
-      },
-    }
-  end
-
-  local json_text = vim.json.encode(data)
-  local cmd = { 'curl', '-X', 'POST', api, '-H', 'Content-Type: application/json', '--data-binary', '@-' }
-  local opts = { stdin = json_text }
-  if callback then
-    return vim.system(cmd, opts, function(obj)
-      handle_result(obj, callback)
-    end)
-  else
-    return vim.system(cmd, opts)
-  end
-end
-
-M.gemini_generate_content_stream = function(user_text, model_name, generation_config, callback)
+local function gemini_generate_content_stream(user_text, model_name, generation_config, callback)
   local api_key = os.getenv('GEMINI_API_KEY')
   if not api_key then
     return
@@ -137,6 +95,83 @@ M.gemini_generate_content_stream = function(user_text, model_name, generation_co
       end
     end
   end)
+end
+
+local function handle_result(obj, callback)
+  local json_text = obj.stdout
+  if not (json_text and #json_text > 0) then
+    return
+  end
+  local model_response = vim.json.decode(json_text)
+  local model_error = vim.tbl_get(model_response, 'error')
+  if model_error then
+    vim.schedule(function ()
+      vim.notify('ERROR: Gemini-autocomplete reported an error\n' .. vim.inspect(model_error), vim.log.levels.ERROR)
+    end)
+  end
+  model_response = vim.tbl_get(model_response, 'candidates', 1, 'content', 'parts', 1, 'text')
+  if not (model_response and #model_response > 0) then
+    return
+  end
+  local response_lines = util.split_string(model_response, '\n')
+  response_lines = util.delete_strings_starting_with_backticks(response_lines)
+  callback(response_lines)
+end
+
+local function gemini_generate_content(user_text, system_text, model_name, generation_config, callback)
+  local api_key = os.getenv('GEMINI_API_KEY')
+  if not api_key then
+    vim.notify('ERROR: Gemini: GEMINI_API_KEY not in environment variables', vim.log.levels.ERROR)
+    return ''
+  end
+
+  local api = API .. model_name .. ':generateContent?key=' .. api_key
+  local contents = {
+    {
+      role = 'user',
+      parts = {
+        {
+          text = user_text,
+        },
+      },
+    },
+  }
+  local data = {
+    contents = contents,
+    generationConfig = generation_config,
+  }
+  if system_text then
+    data.systemInstruction = {
+      role = 'user',
+      parts = {
+        {
+          text = system_text,
+        },
+      },
+    }
+  end
+
+  local json_text = vim.json.encode(data)
+  local cmd = { 'curl', '-X', 'POST', api, '-H', 'Content-Type: application/json', '--data-binary', '@-' }
+  local opts = { stdin = json_text }
+  if callback then
+    return vim.system(cmd, opts, function(obj)
+      handle_result(obj, callback)
+    end)
+  else
+    return vim.system(cmd, opts)
+  end
+end
+
+M.generate_completion = function(user_text, callback)
+  local config = require('gemini-autocomplete.config')
+  local system_text = config.get_config().model.get_system_text()
+  local model_id = config.get_config().model.model_id
+  local generation_config = get_gemini_generation_config()
+
+  print(model_id)
+  gemini_generate_content(user_text, system_text, model_id, generation_config, callback)
+
 end
 
 return M

@@ -1,5 +1,4 @@
 local config = require('gemini-autocomplete.config')
-local api = require('gemini-autocomplete.api')
 local util = require('gemini-autocomplete.util')
 local context = require('gemini-autocomplete.context')
 local completion = require('gemini-autocomplete.completion')
@@ -174,6 +173,7 @@ M.edit_context = function()
 end
 
 M.choose_model = function()
+  local api = config.get_config().model.api
   local available_models = {}
   for _, model_name in pairs(api.MODELS) do
     table.insert(available_models, model_name)

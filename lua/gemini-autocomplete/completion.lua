@@ -1,7 +1,6 @@
 local config = require('gemini-autocomplete.config')
 local util = require('gemini-autocomplete.util')
-local api = require('gemini-autocomplete.api')
-local context = require('gemini-autocomplete.context')
+local api = config.get_config().model.api
 
 local M = {}
 
@@ -49,11 +48,7 @@ M.prompt_code = function()
   local user_text = config.get_config().prompt_code.make_prompt(buf, pos, user_prompt)
   util.notify(user_text, vim.log.levels.DEBUG)
 
-  local system_text = config.get_config().model.get_system_text()
-  local model_id = config.get_config().model.model_id
-  local generation_config = config.get_gemini_generation_config()
-
-  api.gemini_generate_content(user_text, system_text, model_id, generation_config, function(response_lines)
+  api.generate_completion(user_text, function(response_lines)
     vim.schedule(function()
       local current_pos = vim.api.nvim_win_get_cursor(win)
       if current_pos[1] ~= pos[1] or current_pos[2] ~= pos[2] then
@@ -74,11 +69,7 @@ M._gemini_complete = function()
   local user_text = config.get_config().completion.make_prompt(buf, pos)
   util.notify(user_text, vim.log.levels.DEBUG)
 
-  local system_text = config.get_config().model.get_system_text()
-  local model_id = config.get_config().model.model_id
-  local generation_config = config.get_gemini_generation_config()
-
-  api.gemini_generate_content(user_text, system_text, model_id, generation_config, function(response_lines)
+  api.generate_completion(user_text, function(response_lines)
     vim.schedule(function()
       local model_response = vim.fn.join(response_lines, '\n')
       util.notify('Done generating.', vim.log.levels.INFO)
@@ -102,8 +93,6 @@ M.gemini_complete = util.debounce(function()
     return
   end
 
-  local model_id = config.get_config().model.model_id
-  print(string.format('-- %s complete --', model_id))
   M._gemini_complete()
 end, config.get_config().completion.completion_delay)
 
