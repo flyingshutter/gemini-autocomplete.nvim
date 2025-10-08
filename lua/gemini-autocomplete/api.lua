@@ -1,7 +1,5 @@
 local util = require('gemini-autocomplete.util')
 
-local uv = vim.loop or vim.uv
-
 local M = {}
 
 local API = 'https://generativelanguage.googleapis.com/v1beta/models/'
@@ -14,22 +12,6 @@ M.MODELS = {
   GEMINI_2_0_FLASH_LITE = 'gemini-2.0-flash-lite',
 }
 
--- M.model_config = {
---   model_id = M.MODELS.GEMINI_2_5_FLASH_LITE,
---   temperature = 1,
---   response_mime_type = 'text/plain',
---   get_system_text = function()
---     return "You are a coding AI assistant that autocomplete user's code."
---       .. '\n* Your task is to provide code suggestion at the cursor location marked by <cursor></cursor>.'
---       .. '\n* Your response does not need to contain explaination.'
---   end,
--- }
---
--- M.setup = function(opts)
---   opts = opts or {}
---   M.model_config = vim.tbl_deep_extend('force', M.model_config, opts)
--- end
---
 local function get_gemini_generation_config()
   local config = require('gemini-autocomplete.config')
   return {
@@ -39,6 +21,8 @@ local function get_gemini_generation_config()
 end
 
 local function gemini_generate_content_stream(user_text, model_name, generation_config, callback)
+  local uv = vim.loop or vim.uv
+
   local api_key = os.getenv('GEMINI_API_KEY')
   if not api_key then
     return
