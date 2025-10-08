@@ -34,6 +34,7 @@ run `nvim` and `:checkhealth gemini-autocomplete`
 ## Vim Commands
 ```vim
 :GeminiAutocomplete prompt_code   "asks the user for a prompt and inserts the generated output under the cursor
+:GeminiAutocomplete toggle_enabled  "toggles autocompletion on/off
 :GeminiAutocomplete choose_model  "opens a popup window that lets you choose the active gemini model
 :GeminiAutocomplete edit_context  "opens a popup window that lets you edit the list of files in the code context
 :GeminiAutocomplete add_file <file1> [<file2> ...]    "add file(s) to code context (% also works)

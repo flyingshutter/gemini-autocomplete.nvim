@@ -107,15 +107,17 @@ M.setup = function(opts)
       M.clear_context()
     elseif cmd_args.args == 'prompt_code' then
       M.prompt_code()
+    elseif cmd_args.args == 'toggle_enabled' then
+      M.toggle_enabled()
     else
       vim.notify("Error: Command ':GeminiAutocomplete " .. cmd_args.args .. "' does not exist", vim.log.levels.ERROR)
     end
   end, {
     nargs = '+',
     complete = function(arglead, cmdline, cursorpos)
-      return { 'choose_model', 'add_file', 'remove_file', 'add_git_files', 'edit_context', 'clear_context', 'prompt_code' }
+      return { 'choose_model', 'add_file', 'remove_file', 'add_git_files', 'edit_context', 'clear_context', 'prompt_code', 'toggle_enabled' }
     end,
-    desc = 'GeminiAutocomplete commands: choose_model, add_file, remove_file, add_git_files, edit_context, clear_context, prompt_code',
+    desc = 'GeminiAutocomplete commands: choose_model, add_file, remove_file, add_git_files, edit_context, clear_context, prompt_code, toggle_enabled',
   })
 end
 
