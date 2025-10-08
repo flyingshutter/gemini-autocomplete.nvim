@@ -77,7 +77,8 @@ run `nvim` and `:checkhealth gemini-autocomplete`
 ```lua
 opts = {
   model = {
-    model_id = api.MODELS.GEMINI_2_5_FLASH_LITE,
+    api = require('gemini-autocomplete.api'),
+    model_id = require('gemini-autocomplete.api').MODELS.GEMINI_2_5_FLASH_LITE,
     temperature = 1,
     response_mime_type = 'text/plain',
     get_system_text = function()
@@ -130,7 +131,7 @@ opts = {
   external = {
     mini_statusline = {
       hl_disabled = 'GeminiDisabled',
-      hl_enabled = 'Geminiabled',
+      hl_enabled = 'GeminiEnabled',
     }
   }
 }
