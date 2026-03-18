@@ -3,9 +3,14 @@ local util = require('gemini-autocomplete.util')
 local M = {}
 
 local API = 'https://generativelanguage.googleapis.com/v1beta/models/'
-
 M.MODELS = {
+  GEMMA_3_27B_IT = "gemma-3-27b-it",
+  GEMMA_3_12B_IT = "gemma-3-12b-it",
+  GEMMA_3_4B_IT = "gemma-3-4b-it",
+  GEMMA_3_1B_IT = "gemma-3-1b-it",
+  -- GEMMA_3_270M_IT = "gemma-3-270m-it",
   GEMINI_3_0_FLASH_PREVIEW = 'gemini-3-flash-preview',
+  GEMINI_3_1_FLASH_LITE_PREVIEW = 'gemini-3.1-flash-lite-preview',
   GEMINI_2_5_PRO = 'gemini-2.5-pro',
   GEMINI_2_5_FLASH = 'gemini-2.5-flash',
   GEMINI_2_5_FLASH_LITE = 'gemini-2.5-flash-lite',
@@ -116,7 +121,7 @@ local function gemini_generate_content(user_text, system_text, model_name, gener
       role = 'user',
       parts = {
         {
-          text = user_text,
+          text = string.find(model_name, "gemini") and user_text or system_text .. user_text,
         },
       },
     },
@@ -125,7 +130,7 @@ local function gemini_generate_content(user_text, system_text, model_name, gener
     contents = contents,
     generationConfig = generation_config,
   }
-  if system_text then
+  if system_text and string.find(model_name, "gemini") then
     data.systemInstruction = {
       role = 'user',
       parts = {
